@@ -1,0 +1,14 @@
+{
+  "name": "nexpedia",
+  "version": "1.0.0",
+  "description": "An app that allows you to book nature vacations.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prempreet Brar",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
