@@ -17,6 +17,14 @@ exports.createTour = async (request, response) => {
   }
 };
 
+exports.aliasTopTours = (request, response, next) => {
+  request.query.limit = "5";
+  request.query.sort = "-ratingsAverage,price";
+  request.query.fields = "name,price,ratingsAverage,summary,difficulty";
+
+  next();
+};
+
 exports.getAllTours = async (request, response) => {
   try {
     // special
@@ -34,13 +42,13 @@ exports.getAllTours = async (request, response) => {
 
     // sorting
     const sortString = request.query.sort
-      ? request.query.sort.replace(",", " ")
+      ? request.query.sort.replaceAll(",", " ")
       : "-createdAt _id";
     const fAndSQuery = filteredQuery.sort(sortString);
 
     // projection
     const projectionString = request.query.fields
-      ? request.query.fields.replace(",", " ")
+      ? request.query.fields.replaceAll(",", " ")
       : "-__v";
     const fAndSAndPQuery = fAndSQuery.select(projectionString);
 
