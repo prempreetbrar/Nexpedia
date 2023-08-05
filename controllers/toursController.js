@@ -19,13 +19,18 @@ exports.createTour = async (request, response) => {
 
 exports.getAllTours = async (request, response) => {
   try {
-    // build the query
-    const query = { ...request.query };
+    // exclusion
+    let query = { ...request.query };
     const excludedParams = ["page", "sort", "limit", "fields"];
     excludedParams.forEach((param) => delete query[param]);
 
+    // advanced filtering
+    query = JSON.stringify(query);
+    query = query.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    query = JSON.parse(query);
+
     // execute the query
-    const allTours = Tour.find(query);
+    const tours = await Tour.find(query);
 
     response.status(200).json({
       status: "success",
