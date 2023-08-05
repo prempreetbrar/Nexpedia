@@ -35,7 +35,7 @@ exports.getAllTours = async (request, response) => {
     // sorting
     const sortString = request.query.sort
       ? request.query.sort.replace(",", " ")
-      : "-createdAt";
+      : "-createdAt _id";
     const fAndSQuery = filteredQuery.sort(sortString);
 
     // projection
@@ -44,11 +44,24 @@ exports.getAllTours = async (request, response) => {
       : "-__v";
     const fAndSAndPQuery = fAndSQuery.select(projectionString);
 
+    // pagination
+    const pageNumber = Number(request.query.page) || 1;
+    const resultsPerPage = Number(request.query.limit) || 100;
+    const numPages = Math.ceil(
+      (await fAndSAndPQuery.countDocuments()) / resultsPerPage
+    );
+    if (pageNumber > numPages) throw new Error("This page does not exist.");
+
+    const paginatedQuery = fAndSAndPQuery
+      .skip((pageNumber - 1) * resultsPerPage) // skip the results on all previous pages
+      .limit(resultsPerPage); // show the limit on the current page
+
     // execute the query
-    const tours = await Tour.find(fAndSAndPQuery);
+    const tours = await Tour.find(paginatedQuery);
 
     response.status(200).json({
       status: "success",
+      page: pageNumber,
       results: tours.length,
       data: {
         tours,
