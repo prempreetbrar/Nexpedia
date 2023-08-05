@@ -13,7 +13,7 @@
     "no-return-await": "off",
     "no-underscore-dangle": "off",
     "comma-dangle": [
-      "error",
+      "always",
       {
         "functions": "never"
       }
