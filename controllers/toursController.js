@@ -12,14 +12,21 @@ exports.createTour = async (request, response) => {
   } catch (error) {
     response.status(400).json({
       status: "fail",
-      message: "PLACEHOLDER: Invalid data sent!",
+      message: error,
     });
   }
 };
 
 exports.getAllTours = async (request, response) => {
   try {
-    const tours = await Tour.find();
+    // build the query
+    const query = { ...request.query };
+    const excludedParams = ["page", "sort", "limit", "fields"];
+    excludedParams.forEach((param) => delete query[param]);
+
+    // execute the query
+    const allTours = Tour.find(query);
+
     response.status(200).json({
       status: "success",
       results: tours.length,
