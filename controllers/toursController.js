@@ -52,29 +52,22 @@ exports.getTour = async (request, response) => {
   }
 };
 
-exports.updateTour = (request, response) => {
-  const { id } = request.params;
-  const tour = tours.find((tour) => tour.id === Number(id));
-  const updatedTour = { ...tour, ...request.body };
-  tours[Number(id)] = updatedTour;
-
-  if (tour) {
-    fs.writeFile(
-      `${__dirname}/dev-data/data/tours-simple.json`,
-      JSON.stringify(tours),
-      (err) => {
-        response.status(200).json({
-          status: "success",
-          data: {
-            tour: updatedTour,
-          },
-        });
-      }
-    );
-  } else {
+exports.updateTour = async (request, response) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidators: true,
+    });
+    response.status(200).json({
+      status: "success",
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
     response.status(404).json({
       status: "fail",
-      message: "Invalid ID",
+      message: error,
     });
   }
 };
