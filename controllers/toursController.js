@@ -38,8 +38,14 @@ exports.getAllTours = async (request, response) => {
       : "-createdAt";
     const fAndSQuery = filteredQuery.sort(sortString);
 
+    // projection
+    const projectionString = request.query.fields
+      ? request.query.fields.replace(",", " ")
+      : "-__v";
+    const fAndSAndPQuery = fAndSQuery.select(projectionString);
+
     // execute the query
-    const tours = await Tour.find(fAndSQuery);
+    const tours = await Tour.find(fAndSAndPQuery);
 
     response.status(200).json({
       status: "success",
