@@ -1,29 +1,20 @@
-const fs = require("fs");
+const Tour = require("../models/tourModel");
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
-
-exports.checkID = (request, response, next, value) => {
-  console.log(`Tour id is: ${value}`);
-
-  if (Number(request.params.id) > tours.length) {
-    return response.status(404).json({
-      status: "failed",
-      message: "ID does not exist",
+exports.createTour = async (request, response) => {
+  try {
+    const createdTour = await Tour.create(request.body);
+    response.status(201).json({
+      status: "success",
+      data: {
+        tour: createdTour,
+      },
     });
-  }
-  next();
-};
-
-exports.checkBody = (request, response, next) => {
-  if (!("name" in request.body && "price" in request.body)) {
-    return response.status(404).json({
+  } catch (error) {
+    response.status(400).json({
       status: "fail",
-      message: 'Tour must contain "name" AND "price"',
+      message: "PLACEHOLDER: Invalid data sent!",
     });
   }
-  next();
 };
 
 exports.getAllTours = (request, response) => {
@@ -57,26 +48,6 @@ exports.getTour = (request, response) => {
       message: "Invalid ID",
     });
   }
-};
-
-exports.createTour = (request, response) => {
-  const newID = tours[tours.length - 1].id + 1;
-  const newTour = { id: newID, ...request.body };
-  tours.push(newTour);
-
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      response.status(201);
-      response.json({
-        status: "success",
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
 };
 
 exports.updateTour = (request, response) => {
