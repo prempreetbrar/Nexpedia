@@ -14,7 +14,9 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
-app.all("*", errorRouter);
+app.use("*", (request, response, next) => {
+  next(new AppError(`Cannot find ${request.originalUrl} on the server!`), 404);
+});
 app.use(errorController);
 
 module.exports = app;
