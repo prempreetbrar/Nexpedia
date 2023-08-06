@@ -80,4 +80,13 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+tourSchema.pre("aggregate", function (next) {
+  this._pipeline.unshift({
+    $match: {
+      secretTour: { $ne: true },
+    },
+  });
+  next();
+});
+
 module.exports = mongoose.model("Tour", tourSchema);
