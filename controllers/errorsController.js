@@ -4,6 +4,9 @@ const DUPLICATE = 11000;
 
 module.exports = (error, request, response, next) => {
   let detailedError = { ...error };
+  detailedError.message = error.message;
+  detailedError.stack = error.stack;
+  detailedError.isOperational = error.isOperational;
   detailedError.statusCode = error.statusCode || 500;
   detailedError.status = error.status || "error";
 
@@ -58,7 +61,7 @@ function sendErrorDev(error, response) {
 }
 
 function sendErrorProd(error, response) {
-  if (error.isOperational) {
+  if (!error.isOperational) {
     sendErrorNonOperational(error, response);
   } else {
     return response.status(error.statusCode).json({
