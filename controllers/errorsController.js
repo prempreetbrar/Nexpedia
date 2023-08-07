@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const DUPLICATE = 11000;
 
@@ -5,21 +6,22 @@ module.exports = (error, request, response, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
 
+  let detailedError = { ...error };
+
+  if (error instanceof mongoose.Error.CastError)
+    detailedError = handleDBCastError(detailedError);
+  if (error.code === DUPLICATE)
+    detailedError = handleDBDuplicateError(detailedError);
+  if (error instanceof mongoose.Error.ValidationError)
+    detailedError = handleDBValidationError(detailedError);
+
+  if (!detailedError.isOperational) {
+    sendErrorNonOperational(detailedError, response);
+  }
   if (process.env.NODE_ENV === "production") {
-    let detailedError = { ...error };
-
-    switch (error.name) {
-      case "CastError":
-        detailedError = handleDBCastError(detailedError);
-        break;
-    }
-    switch (error.code) {
-      case DUPLICATE:
-        detailedError = handleDBDuplicateError(detailedError);
-    }
-
     sendErrorProd(detailedError, response);
   }
+  sendErrorDev(detailedError, response);
 };
 
 function handleDBCastError(error) {
@@ -32,6 +34,23 @@ function handleDBDuplicateError(error) {
     Object.values(error.keyValue)[0]
   }. Please use another ${Object.keys(error.keyValue)[0]}.`;
   return new AppError(message, 404);
+}
+
+function handleDBValidationError(error) {
+  const messages = ["Validation Error(s):"];
+  const errors = error.errors;
+
+  for (const error in errors) {
+    const keyName = error;
+    const keyValue = errors[error].value;
+    const errorMessage = errors[error].message;
+
+    const responseOutput = `${keyName}: ${keyValue} - ${errorMessage}     `;
+    messages.push(responseOutput);
+  }
+
+  const message = messages.join(" ");
+  return new AppError(message, 400);
 }
 
 function sendErrorDev(error, response) {
