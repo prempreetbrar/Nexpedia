@@ -3,10 +3,9 @@ const AppError = require("../utils/appError");
 const DUPLICATE = 11000;
 
 module.exports = (error, request, response, next) => {
-  error.statusCode = error.statusCode || 500;
-  error.status = error.status || "error";
-
-  let detailedError = { ...error };
+  let detailedError = structuredClone(error);
+  detailedError.statusCode = error.statusCode || 500;
+  detailedError.status = error.status || "error";
 
   if (error instanceof mongoose.Error.CastError)
     detailedError = handleDBCastError(detailedError);
@@ -15,9 +14,7 @@ module.exports = (error, request, response, next) => {
   else if (error instanceof mongoose.Error.ValidationError)
     detailedError = handleDBValidationError(detailedError);
 
-  if (!detailedError.isOperational) {
-    sendErrorNonOperational(detailedError, response);
-  } else if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production") {
     sendErrorProd(detailedError, response);
   } else sendErrorDev(detailedError, response);
 };
@@ -61,10 +58,14 @@ function sendErrorDev(error, response) {
 }
 
 function sendErrorProd(error, response) {
-  return response.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
+  if (error.isOperational) {
+    sendErrorNonOperational(error, response);
+  } else {
+    return response.status(error.statusCode).json({
+      status: error.status,
+      message: error.message,
+    });
+  }
 }
 
 function sendErrorNonOperational(error, response) {

@@ -1,3 +1,6 @@
+const handleUncaught = require("./utils/handleUncaught");
+handleUncaught("unhandledException");
+
 const dotenv = require("dotenv");
 const ENV = `${__dirname}/config.env`;
 dotenv.config({ path: ENV });
@@ -18,7 +21,4 @@ const server = app.listen(PORT, () => {
   console.log(`App running on port ${PORT}...`);
 });
 
-process.on("unhandledRejection", (error) => {
-  console.log(error.name, error.message);
-  server.close(() => process.exit(1));
-});
+handleUncaught("unhandledRejection", server);
