@@ -1,19 +1,19 @@
 const express = require("express");
+
+const { protect } = require("../controllers/authController");
 const {
   getAllTours,
   createTour,
   getTour,
   updateTour,
   deleteTour,
-  checkID,
-  checkBody,
   aliasTopTours,
   getTourStatistics,
   getMonthlyPlan,
 } = require("../controllers/toursController");
 
 const router = express.Router();
-router.route("/").get(getAllTours).post(createTour);
+router.route("/").get(protect, getAllTours).post(createTour);
 router.route("/top-tours").get(aliasTopTours, getAllTours);
 router.route("/tours-stats").get(getTourStatistics);
 router.route("/monthly-plan/:year").get(getMonthlyPlan);

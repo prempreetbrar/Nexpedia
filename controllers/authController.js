@@ -1,3 +1,4 @@
+const util = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
@@ -14,6 +15,46 @@ function signToken(userId) {
     }
   );
 }
+
+exports.protect = catchAsync(async (request, response, next) => {
+  // 1) check if the JWT token exists
+  let token;
+  if (
+    request.headers.authorization &&
+    request.headers.authorization.startsWith("Bearer")
+  ) {
+    token = request.headers.authorization.split(" ")[1];
+  }
+
+  if (!token)
+    throw new AppError(
+      "You are not logged in. Please log in to get access.",
+      401
+    );
+
+  // 2) is valid
+  const decodedPayload = await util.promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  // 3) check if user has been deleted in the meantime
+  const user = await User.findById(decodedPayload.id);
+  if (!user)
+    throw new AppError(
+      "The user belonging to this token no longer exists",
+      401
+    );
+
+  // 4) user changed password after token was issued
+  if (user.hasPasswordChanged(decodedPayload.iat)) {
+    throw new AppError("User recently changed password! Please log in again.");
+  }
+
+  // 5) Grant access to protected route
+  request.user = user;
+  next();
+});
 
 exports.signUpUser = catchAsync(async (request, response) => {
   const newUser = await User.create({

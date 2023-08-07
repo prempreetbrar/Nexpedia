@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const DUPLICATE = 11000;
@@ -16,6 +17,11 @@ module.exports = (error, request, response, next) => {
     detailedError = handleDBDuplicateError(detailedError);
   else if (error instanceof mongoose.Error.ValidationError)
     detailedError = handleDBValidationError(detailedError);
+  else if (error instanceof jwt.TokenExpiredError) {
+    detailedError = handleJSONTokenExpiredError();
+  } else if (error instanceof jwt.JsonWebTokenError) {
+    detailedError = handleJSONWebTokenError();
+  }
 
   if (process.env.NODE_ENV === "production") {
     sendErrorProd(detailedError, response);
@@ -49,6 +55,14 @@ function handleDBValidationError(error) {
 
   const message = messages.join(" ");
   return new AppError(message, 400);
+}
+
+function handleJSONWebTokenError() {
+  return new AppError("Invalid token. Please log in again!", 401);
+}
+
+function handleJSONTokenExpiredError() {
+  return new AppError("Your token has expired. Please log in again!", 401);
 }
 
 function sendErrorDev(error, response) {
