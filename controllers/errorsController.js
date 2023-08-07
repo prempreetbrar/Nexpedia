@@ -10,18 +10,16 @@ module.exports = (error, request, response, next) => {
 
   if (error instanceof mongoose.Error.CastError)
     detailedError = handleDBCastError(detailedError);
-  if (error.code === DUPLICATE)
+  else if (error.code === DUPLICATE)
     detailedError = handleDBDuplicateError(detailedError);
-  if (error instanceof mongoose.Error.ValidationError)
+  else if (error instanceof mongoose.Error.ValidationError)
     detailedError = handleDBValidationError(detailedError);
 
   if (!detailedError.isOperational) {
     sendErrorNonOperational(detailedError, response);
-  }
-  if (process.env.NODE_ENV === "production") {
+  } else if (process.env.NODE_ENV === "production") {
     sendErrorProd(detailedError, response);
-  }
-  sendErrorDev(detailedError, response);
+  } else sendErrorDev(detailedError, response);
 };
 
 function handleDBCastError(error) {
@@ -54,7 +52,7 @@ function handleDBValidationError(error) {
 }
 
 function sendErrorDev(error, response) {
-  response.status(error.statusCode).json({
+  return response.status(error.statusCode).json({
     error: error,
     status: error.status,
     message: error.message,
@@ -63,7 +61,7 @@ function sendErrorDev(error, response) {
 }
 
 function sendErrorProd(error, response) {
-  response.status(error.statusCode).json({
+  return response.status(error.statusCode).json({
     status: error.status,
     message: error.message,
   });
@@ -72,7 +70,7 @@ function sendErrorProd(error, response) {
 function sendErrorNonOperational(error, response) {
   console.error("Error: ", error);
 
-  response.status(500).json({
+  return response.status(500).json({
     status: "error",
     message: "Something went very wrong! Please contact support.",
   });
