@@ -1,15 +1,17 @@
-const fs = require("fs");
+const User = require("../models/userModel");
+const catchAsync = require("../utils/catchAsync");
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
+exports.getAllUsers = catchAsync(async (request, response) => {
+  const users = await User.find();
 
-exports.getAllUsers = (request, response) => {
-  response.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
+  response.status(200).json({
+    status: "success",
+    result: users.length,
+    data: {
+      users,
+    },
   });
-};
+});
 
 exports.getUser = (request, response) => {
   response.status(500).json({
