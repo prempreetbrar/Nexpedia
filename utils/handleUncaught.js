@@ -1,6 +1,7 @@
 module.exports = (event, server) => {
   process.on(event, (error) => {
     console.error(error.name, error.message);
-    server?.close(() => process.exit(1));
+    if (server) server.close(() => process.exit(1));
+    else process.exit(1);
   });
 };
