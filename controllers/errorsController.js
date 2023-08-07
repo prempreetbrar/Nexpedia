@@ -3,7 +3,7 @@ const AppError = require("../utils/appError");
 const DUPLICATE = 11000;
 
 module.exports = (error, request, response, next) => {
-  let detailedError = structuredClone(error);
+  let detailedError = { ...error };
   detailedError.statusCode = error.statusCode || 500;
   detailedError.status = error.status || "error";
 
