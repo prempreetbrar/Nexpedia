@@ -88,7 +88,7 @@ exports.signUpUser = catchAsync(async (request, response) => {
     passwordConfirm: request.body.passwordConfirm,
   });
 
-  createSendToken(newUser, 201, signToken(newUser._id), response);
+  createSendToken(newUser, 201, signToken(newUser.id), response);
 });
 
 exports.loginUser = catchAsync(async (request, response) => {
@@ -104,7 +104,7 @@ exports.loginUser = catchAsync(async (request, response) => {
   if (!user || !(await user.isPasswordCorrect(password, user.password)))
     throw new AppError("Incorrect email or password", 401);
 
-  createSendToken(user, 200, signToken(user._id), response);
+  createSendToken(user, 200, signToken(user.id), response);
 });
 
 exports.forgotPassword = catchAsync(async (request, response, next) => {
@@ -177,14 +177,14 @@ exports.resetPassword = catchAsync(async (request, response, next) => {
   await user.save();
 
   // 4) log user in
-  createSendToken(user, 200, signToken(user._id), response);
+  createSendToken(user, 200, signToken(user.id), response);
 });
 
 exports.changePassword = catchAsync(async (request, response, next) => {
   // 1) we want user to still write password (so that somebody
   // can't just find an open computer and change the password)
   // 2) Check if given password is correct
-  const userWithPassword = await User.findById(request.user._id).select(
+  const userWithPassword = await User.findById(request.user.id).select(
     "+password"
   );
 
@@ -205,7 +205,7 @@ exports.changePassword = catchAsync(async (request, response, next) => {
   createSendToken(
     userWithPassword,
     200,
-    signToken(userWithPassword._id),
+    signToken(userWithPassword.id),
     response
   );
 });
