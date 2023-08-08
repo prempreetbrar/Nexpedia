@@ -70,3 +70,12 @@ exports.deleteUser = (request, response) => {
     message: "This route is not yet defined!",
   });
 };
+
+exports.deleteMe = catchAsync(async (request, response) => {
+  await User.findByIdAndUpdate(request.user.id, { active: false });
+
+  response.status(204).json({
+    status: "success",
+    data: null,
+  });
+});

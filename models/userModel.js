@@ -4,6 +4,11 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   role: {
     type: String,
     enum: ["user", "guide", "lead-guide", "admin"],
@@ -51,6 +56,11 @@ userSchema.pre("save", async function (next) {
   // subtract two seconds from passwordChangedAt time.
   this.passwordChangedAt = Date.now() - 2000;
 
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
