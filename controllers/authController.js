@@ -18,10 +18,21 @@ function signToken(userId) {
   );
 }
 
-function createSendToken(user, statusCode, token, response) {
+function createSendToken(user, statusCode, response) {
+  const token = signToken(user.id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    httpOnly: true,
+  };
+  response.cookie("jwt", token, cookieOptions);
+  user.password = undefined;
+
   response.status(statusCode).json({
     status: "success",
-    token,
+    token: signToken(user.id),
     data: {
       user,
     },
@@ -88,7 +99,7 @@ exports.signUpUser = catchAsync(async (request, response) => {
     passwordConfirm: request.body.passwordConfirm,
   });
 
-  createSendToken(newUser, 201, signToken(newUser.id), response);
+  createSendToken(newUser, 201, response);
 });
 
 exports.loginUser = catchAsync(async (request, response) => {
@@ -104,7 +115,7 @@ exports.loginUser = catchAsync(async (request, response) => {
   if (!user || !(await user.isPasswordCorrect(password, user.password)))
     throw new AppError("Incorrect email or password", 401);
 
-  createSendToken(user, 200, signToken(user.id), response);
+  createSendToken(user, 200, response);
 });
 
 exports.forgotPassword = catchAsync(async (request, response, next) => {
@@ -177,7 +188,7 @@ exports.resetPassword = catchAsync(async (request, response, next) => {
   await user.save();
 
   // 4) log user in
-  createSendToken(user, 200, signToken(user.id), response);
+  createSendToken(user, 200, response);
 });
 
 exports.changePassword = catchAsync(async (request, response, next) => {
@@ -202,10 +213,5 @@ exports.changePassword = catchAsync(async (request, response, next) => {
   await userWithPassword.save();
 
   // 4) Send new JWT token with updated password
-  createSendToken(
-    userWithPassword,
-    200,
-    signToken(userWithPassword.id),
-    response
-  );
+  createSendToken(userWithPassword, 200, response);
 });
