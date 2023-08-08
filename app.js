@@ -1,7 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
-const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const AppError = require("./utils/appError");
 const errorController = require("./controllers/errorsController");
@@ -22,9 +23,12 @@ const limiter = rateLimit({
   },
 });
 
-app.use(helmet());
+app.use(helmet()); // http response header protection
 app.use("/api", limiter);
 app.use(express.json({ limit: "50kb" }));
+
+// data sanitization against NoSQL query injection
+app.use(mongoSanitize());
 app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/tours", tourRouter);
