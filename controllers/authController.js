@@ -18,6 +18,16 @@ function signToken(userId) {
   );
 }
 
+function createSendToken(user, statusCode, token, response) {
+  response.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+}
+
 exports.protect = catchAsync(async (request, response, next) => {
   // 1) check if the JWT token exists
   let token;
@@ -78,15 +88,7 @@ exports.signUpUser = catchAsync(async (request, response) => {
     passwordConfirm: request.body.passwordConfirm,
   });
 
-  const token = signToken(newUser._id);
-
-  response.status(201).json({
-    status: "success",
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, signToken(newUser._id), response);
 });
 
 exports.loginUser = catchAsync(async (request, response) => {
@@ -102,11 +104,7 @@ exports.loginUser = catchAsync(async (request, response) => {
   if (!user || !(await user.isPasswordCorrect(password, user.password)))
     throw new AppError("Incorrect email or password", 401);
 
-  const token = signToken(user._id);
-  response.status(200).json({
-    status: "success",
-    token,
-  });
+  createSendToken(user, 200, signToken(user._id), response);
 });
 
 exports.forgotPassword = catchAsync(async (request, response, next) => {
@@ -179,9 +177,35 @@ exports.resetPassword = catchAsync(async (request, response, next) => {
   await user.save();
 
   // 4) log user in
-  const token = signToken(user._id);
-  response.status(200).json({
-    status: "success",
-    token,
-  });
+  createSendToken(user, 200, signToken(user._id), response);
+});
+
+exports.changePassword = catchAsync(async (request, response, next) => {
+  // 1) we want user to still write password (so that somebody
+  // can't just find an open computer and change the password)
+  // 2) Check if given password is correct
+  const userWithPassword = await User.findById(request.user._id).select(
+    "+password"
+  );
+
+  if (
+    !(await userWithPassword.isPasswordCorrect(
+      request.body.passwordCurrent,
+      userWithPassword.password
+    ))
+  )
+    throw new AppError("The existing password provided was incorrect.", 401);
+
+  // 3) Update password
+  userWithPassword.password = request.body.password;
+  userWithPassword.passwordConfirm = request.body.passwordConfirm;
+  await userWithPassword.save();
+
+  // 4) Send new JWT token with updated password
+  createSendToken(
+    userWithPassword,
+    200,
+    signToken(userWithPassword._id),
+    response
+  );
 });
