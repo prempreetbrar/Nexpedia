@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const AppError = require("./utils/appError");
 const errorController = require("./controllers/errorsController");
@@ -21,6 +22,7 @@ const limiter = rateLimit({
   },
 });
 
+app.use(helmet());
 app.use("/api", limiter);
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
