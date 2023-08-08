@@ -24,7 +24,7 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use("/api", limiter);
-app.use(express.json());
+app.use(express.json({ limit: "50kb" }));
 app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/tours", tourRouter);
