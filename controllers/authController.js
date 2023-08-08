@@ -122,6 +122,10 @@ exports.forgotPassword = catchAsync(async (request, response, next) => {
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}. \n
   If you didn't forget your password, please ignore this email.`;
 
+  // password - select: false. Therefore, our user object does not have a password.
+  // However, password - required: true. So, when we go to save, we would get an error.
+  // That is why we do not want to validate before save; it is to account for the fact
+  // that we cannot select the password and thus cannot meet the required constraint.
   await user.save({ validateBeforeSave: false });
 
   try {
@@ -139,6 +143,7 @@ exports.forgotPassword = catchAsync(async (request, response, next) => {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
+    // see comment above
     await user.save({ validateBeforeSave: false });
     throw new AppError(
       "There was an error sending the email. Try again later!",
