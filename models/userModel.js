@@ -46,7 +46,10 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
-  this.passwordChangedAt = Date.now();
+  // sometimes the database save may be a bit slow; in this case, the token
+  // may be created before this line executes. To ensure token remains valid,
+  // subtract two seconds from passwordChangedAt time.
+  this.passwordChangedAt = Date.now() - 2000;
 
   next();
 });

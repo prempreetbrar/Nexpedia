@@ -1,5 +1,6 @@
 const util = require("util");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/userModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
@@ -144,4 +145,38 @@ exports.forgotPassword = catchAsync(async (request, response, next) => {
       500
     );
   }
+});
+
+exports.resetPassword = catchAsync(async (request, response, next) => {
+  // 1) get token
+  const resetToken = request.params.token;
+  const encryptedResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // 2) get user
+  const user = await User.findOne({
+    passwordResetToken: encryptedResetToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user)
+    throw new Error(
+      "The password reset token is either invalid, or has expired.",
+      400
+    );
+
+  // 3) update user
+  user.password = request.body.password;
+  user.passwordConfirm = request.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  // 4) log user in
+  const token = signToken(user._id);
+  response.status(200).json({
+    status: "success",
+    token,
+  });
 });
