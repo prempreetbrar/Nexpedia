@@ -10,7 +10,7 @@ const {
   aliasTopTours,
   getTourStatistics,
   getMonthlyPlan,
-} = require("../controllers/toursController");
+} = require("../controllers/tourController");
 
 const router = express.Router();
 router.route("/").get(protect, getAllTours).post(createTour);

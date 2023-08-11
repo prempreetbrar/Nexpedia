@@ -7,10 +7,10 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 
 const AppError = require("./utils/appError");
-const errorController = require("./controllers/errorsController");
+const errorController = require("./controllers/errorController");
 
-const tourRouter = require("./routes/toursRoutes");
-const userRouter = require("./routes/usersRoutes");
+const tourRouter = require("./routes/tourRoutes");
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 
