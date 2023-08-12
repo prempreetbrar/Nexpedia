@@ -4,23 +4,14 @@ const factory = require("./controllerFactory");
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
-exports.createReview = catchAsync(async (request, response) => {
+exports.setTourId = (request, response, next) => {
   // if we are in a nested route and the tour was unspecified, then use that tourId
   request.body.tour = request.body.tour || request.params.tourId;
+  request.body.user = request.user;
+  next();
+};
 
-  const review = await Review.create({
-    ...request.body,
-    tour: request.body.tour,
-    user: request.user.id,
-  });
-
-  response.status(201).json({
-    status: "success",
-    data: {
-      review,
-    },
-  });
-});
+exports.createReview = factory.createOne(Review);
 
 exports.getAllReviews = catchAsync(async (request, response) => {
   let filter = {};

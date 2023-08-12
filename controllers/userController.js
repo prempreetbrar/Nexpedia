@@ -23,12 +23,7 @@ exports.getUser = (request, response) => {
   });
 };
 
-exports.createUser = (request, response) => {
-  response.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
+exports.createUser = factory.createOne(User);
 
 exports.updateMe = catchAsync(async (request, response) => {
   if (

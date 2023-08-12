@@ -5,15 +5,7 @@ const APIFeatures = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 
-exports.createTour = catchAsync(async (request, response) => {
-  const createdTour = await Tour.create(request.body);
-  response.status(201).json({
-    status: "success",
-    data: {
-      tour: createdTour,
-    },
-  });
-});
+exports.createTour = factory.createOne(Tour);
 
 exports.aliasTopTours = (request, response, next) => {
   request.query.limit = "5";
