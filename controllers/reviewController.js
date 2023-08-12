@@ -1,4 +1,6 @@
 const Review = require("../models/reviewModel");
+const factory = require("./controllerFactory");
+
 const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
@@ -40,3 +42,5 @@ exports.getAllReviews = catchAsync(async (request, response) => {
     },
   });
 });
+
+exports.deleteReview = factory.deleteOne(Review);

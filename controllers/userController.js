@@ -1,4 +1,6 @@
 const User = require("../models/userModel");
+const factory = require("./controllerFactory");
+
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
@@ -64,12 +66,7 @@ exports.updateUser = (request, response) => {
   });
 };
 
-exports.deleteUser = (request, response) => {
-  response.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
+exports.deleteUser = factory.deleteOne(User);
 
 exports.deleteMe = catchAsync(async (request, response) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });
