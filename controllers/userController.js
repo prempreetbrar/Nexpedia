@@ -16,14 +16,10 @@ exports.getAllUsers = catchAsync(async (request, response) => {
   });
 });
 
-exports.getUser = (request, response) => {
-  response.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
-
 exports.createUser = factory.createOne(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
 
 exports.updateMe = catchAsync(async (request, response) => {
   if (
@@ -53,9 +49,6 @@ exports.updateMe = catchAsync(async (request, response) => {
     },
   });
 });
-
-exports.updateUser = factory.updateOne(User);
-exports.deleteUser = factory.deleteOne(User);
 
 exports.deleteMe = catchAsync(async (request, response) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });

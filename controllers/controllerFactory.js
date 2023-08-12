@@ -13,6 +13,27 @@ exports.createOne = (Model) => {
   });
 };
 
+exports.getOne = (Model, populateOptions) => {
+  return catchAsync(async (request, response) => {
+    let query = Model.findById(request.params.id);
+    if (populateOptions) query = query.populate(populateOptions);
+
+    const document = await query;
+    if (!document)
+      throw new AppError(
+        `No ${Model.modelName} found with ID ${request.params.id}`,
+        404
+      );
+
+    response.status(200).json({
+      status: "success",
+      data: {
+        [Model.modelName.toLowerCase()]: document,
+      },
+    });
+  });
+};
+
 exports.updateOne = (Model) => {
   return catchAsync(async (request, response) => {
     const document = await Model.findByIdAndUpdate(

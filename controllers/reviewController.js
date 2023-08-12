@@ -12,6 +12,9 @@ exports.setTourId = (request, response, next) => {
 };
 
 exports.createReview = factory.createOne(Review);
+exports.getReview = factory.getOne(Review);
+exports.updateReview = factory.updateOne(Review);
+exports.deleteReview = factory.deleteOne(Review);
 
 exports.getAllReviews = catchAsync(async (request, response) => {
   let filter = {};
@@ -33,6 +36,3 @@ exports.getAllReviews = catchAsync(async (request, response) => {
     },
   });
 });
-
-exports.updateReview = factory.updateOne(Review);
-exports.deleteReview = factory.deleteOne(Review);
