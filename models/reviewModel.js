@@ -33,15 +33,12 @@ reviewSchema.pre("save", function (next) {
   /*
   Reason for difference compared to below: https://mongoosejs.com/docs/populate.html#populate_an_existing_mongoose_document
   */
-  this.populate(["tour", "user"]);
+  this.populate("user");
   next();
 });
 
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
-    path: "tour",
-    select: "name",
-  }).populate({
     path: "user",
     select: "name photo",
   });
