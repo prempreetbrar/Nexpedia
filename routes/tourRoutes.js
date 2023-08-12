@@ -1,4 +1,5 @@
 const express = require("express");
+const reviewRouter = require("./reviewRoutes");
 
 const { protect, restrictTo } = require("../controllers/authController");
 const {
@@ -22,5 +23,6 @@ router
   .get(getTour)
   .patch(updateTour)
   .delete(protect, restrictTo("admin", "lead-guide"), deleteTour);
+router.use("/:tourId/reviews", reviewRouter);
 
 module.exports = router;

@@ -3,8 +3,12 @@ const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 
 exports.createReview = catchAsync(async (request, response) => {
+  // if we are in a nested route and the tour was unspecified, then use that tourId
+  request.body.tour = request.body.tour || request.params.tourId;
+
   const review = await Review.create({
     ...request.body,
+    tour: request.body.tour,
     user: request.user.id,
   });
 
