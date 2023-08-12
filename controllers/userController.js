@@ -4,23 +4,6 @@ const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-exports.getAllUsers = catchAsync(async (request, response) => {
-  const users = await User.find();
-
-  response.status(200).json({
-    status: "success",
-    result: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
-exports.createUser = factory.createOne(User);
-exports.getUser = factory.getOne(User);
-exports.updateUser = factory.updateOne(User);
-exports.deleteUser = factory.deleteOne(User);
-
 exports.updateMe = catchAsync(async (request, response) => {
   if (
     "currentPassword" in request.body ||
@@ -58,3 +41,9 @@ exports.deleteMe = catchAsync(async (request, response) => {
     data: null,
   });
 });
+
+exports.createUser = factory.createOne(User);
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

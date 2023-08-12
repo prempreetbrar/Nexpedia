@@ -1,3 +1,4 @@
+const APIFeatures = require("../utils/apiFeatures");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
@@ -8,6 +9,29 @@ exports.createOne = (Model) => {
       status: "success",
       data: {
         [Model.modelName.toLowerCase()]: document,
+      },
+    });
+  });
+};
+
+exports.getAll = (Model) => {
+  return catchAsync(async (request, response) => {
+    const cleanedQuery = new APIFeatures(
+      request.query,
+      Model.find(request.body.filter || {})
+    )
+      .filter()
+      .sort()
+      .project()
+      .paginate();
+    const documents = await cleanedQuery.dbQuery;
+
+    response.status(200).json({
+      status: "success",
+      page: cleanedQuery.pageNumber,
+      result: documents.length,
+      data: {
+        [Model.modelName.toLowerCase() + "s"]: documents,
       },
     });
   });
