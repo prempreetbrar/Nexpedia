@@ -21,7 +21,10 @@ exports.createReview = catchAsync(async (request, response) => {
 });
 
 exports.getAllReviews = catchAsync(async (request, response) => {
-  const cleanedReviews = new APIFeatures(request.query, Review.find())
+  let filter = {};
+  if (request.params.tourId) filter = { tour: request.params.tourId };
+
+  const cleanedReviews = new APIFeatures(request.query, Review.find(filter))
     .filter()
     .sort()
     .project()
