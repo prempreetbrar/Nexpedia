@@ -76,6 +76,7 @@ userSchema.methods.createPasswordResetToken = function () {
 };
 
 userSchema.methods.hasPasswordChanged = function (JWTTimeStamp) {
+  if (!this.passwordChangedAt) return false;
   const passwordChangedAtSeconds = parseInt(
     this.passwordChangedAt.getTime() / 1000
   );

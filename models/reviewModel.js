@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Tour = require("./tourModel");
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -29,12 +30,41 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.static(
+  "calcAverageRatings",
+  async function calcAverageRatings(tourId) {
+    const stats = await this.aggregate([
+      {
+        $match: {
+          tour: tourId,
+        },
+      },
+      {
+        $group: {
+          _id: "$tour",
+          numRatings: { $sum: 1 },
+          avgRating: { $avg: "$rating" },
+        },
+      },
+    ]);
+
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsQuantity: stats[0].numRatings,
+      ratingsAverage: stats[0].avgRating,
+    });
+  }
+);
+
 reviewSchema.pre("save", function (next) {
   /*
   Reason for difference compared to below: https://mongoosejs.com/docs/populate.html#populate_an_existing_mongoose_document
   */
   this.populate("user");
   next();
+});
+
+reviewSchema.post("save", function () {
+  this.constructor.calcAverageRatings(this.tour);
 });
 
 reviewSchema.pre(/^find/, function (next) {
