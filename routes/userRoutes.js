@@ -7,6 +7,7 @@ const {
   resetPassword,
   changePassword,
   protect,
+  restrictTo,
 } = require("../controllers/authController");
 
 const {
@@ -26,14 +27,12 @@ router.post("/signup", signUpUser);
 router.post("/login", loginUser);
 router.post("/forgotPassword", forgotPassword);
 router.patch("/resetPassword/:token", resetPassword);
-router.patch("/changePassword", protect, changePassword);
 
-router
-  .route("/me")
-  .get(protect, setUserId, getUser)
-  .patch(protect, updateMe)
-  .delete(protect, deleteMe);
+router.use(protect);
+router.patch("/changePassword", changePassword);
+router.route("/me").get(setUserId, getUser).patch(updateMe).delete(deleteMe);
 
+router.use(restrictTo("admin"));
 router.route("/").get(getAllUsers).post(createUser);
 router.route("/:id").get(getUser).patch(updateUser).delete(deleteUser);
 
