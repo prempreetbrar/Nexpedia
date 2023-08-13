@@ -29,7 +29,7 @@ exports.getAll = (Model) => {
     response.status(200).json({
       status: "success",
       page: cleanedQuery.pageNumber,
-      result: documents.length,
+      results: documents.length,
       data: {
         [Model.modelName.toLowerCase() + "s"]: documents,
       },
