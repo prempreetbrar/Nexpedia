@@ -1,8 +1,12 @@
 const User = require("../models/userModel");
 const factory = require("./controllerFactory");
-
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+
+exports.setUserId = (request, response, next) => {
+  request.params.id = request.user.id;
+  next();
+};
 
 exports.updateMe = catchAsync(async (request, response) => {
   if (
