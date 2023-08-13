@@ -1,6 +1,7 @@
 const Tour = require("../models/tourModel");
 const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 
 exports.aliasTopTours = (request, response, next) => {
   request.query.limit = "5";
@@ -9,6 +10,33 @@ exports.aliasTopTours = (request, response, next) => {
 
   next();
 };
+
+exports.getToursWithin = catchAsync(async (request, response) => {
+  const { distance, latitudeLongitude, unit } = request.params;
+  const radius = unit === "mi" ? distance / 3963.2 : distance / 6378.1;
+  const [latitude, longitude] = latitudeLongitude.split(",");
+  if (!latitude || !longitude)
+    throw new AppError(
+      "You must specify latitude and longitude in the format lat,lng",
+      400
+    );
+
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: {
+        $centerSphere: [[longitude, latitude], radius],
+      },
+    },
+  });
+
+  response.status(200).json({
+    status: "success",
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
 
 exports.getTourStatistics = catchAsync(async (request, response) => {
   const stats = await Tour.aggregate([
