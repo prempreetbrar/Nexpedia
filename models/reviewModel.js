@@ -62,6 +62,8 @@ reviewSchema.static(
   }
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre("save", function (next) {
   /*
   Reason for difference compared to below: https://mongoosejs.com/docs/populate.html#populate_an_existing_mongoose_document
