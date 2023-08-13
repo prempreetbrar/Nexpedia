@@ -4,6 +4,7 @@ const reviewRouter = require("./reviewRoutes");
 const { protect, restrictTo } = require("../controllers/authController");
 const {
   getToursWithin,
+  getDistances,
   getAllTours,
   createTour,
   getTour,
@@ -27,6 +28,7 @@ router.get(
   "/tours-within/:distance/center/:latitudeLongitude/unit/:unit",
   getToursWithin
 );
+router.get("/distances/:latitudeLongitude/unit/:unit", getDistances);
 
 router
   .route("/monthly-plan/:year")
