@@ -30,6 +30,10 @@ mixin review(review, rating, user)
                 svg.reviews__star(class=`reviews__star--${rating >= star ? "active" : "inactive"}`)
                     use(xlink:href='/img/icons.svg#icon-star')
 
+block append head
+    script(src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js')
+    link(href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet')
+
 block content 
     section.section-header
         .header__hero
@@ -75,8 +79,8 @@ block content
         each image, number in tour.images 
             +tourImage(image, number)
 
-    //- section.section-map
-    //-     #map
+    section.section-map
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews
