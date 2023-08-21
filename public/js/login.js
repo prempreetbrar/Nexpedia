@@ -1,6 +1,7 @@
-async function login(email, password) {
-  console.log(email, password);
+import axios from "axios";
+import showAlert from "./alerts";
 
+export default async function login(email, password) {
   try {
     const response = await axios({
       method: "POST",
@@ -12,23 +13,12 @@ async function login(email, password) {
     });
 
     if (response.data.status === "success") {
-      alert("Logged in successfully!");
+      showAlert("success", "Logged in successfully!");
       window.setTimeout(() => {
         location.assign("/");
       }, 1500);
     }
   } catch (error) {
-    alert(error.response.data.message);
+    showAlert("error", error.response.data.message);
   }
 }
-
-const loginForm = document.querySelector(".form");
-
-loginForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  console.log("Submitted!");
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  login(email, password);
-});
