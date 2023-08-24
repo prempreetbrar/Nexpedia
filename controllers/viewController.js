@@ -11,11 +11,17 @@ exports.getOverview = catchAsync(async (request, response) => {
   });
 });
 
-exports.getLogin = catchAsync(async (request, response) => {
+exports.getAccount = (request, response) => {
+  response.status(200).render("account", {
+    title: "Your account",
+  });
+};
+
+exports.getLogin = (request, response) => {
   response.status(200).render("login", {
     title: "Login",
   });
-});
+};
 
 exports.getTour = catchAsync(async (request, response) => {
   const tour = await Tour.findOne({ slug: request.params.slug }).populate({
