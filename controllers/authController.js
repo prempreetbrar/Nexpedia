@@ -82,32 +82,36 @@ exports.protect = catchAsync(async (request, response, next) => {
   next();
 });
 
-exports.isLoggedIn = catchAsync(async (request, response, next) => {
+exports.isLoggedIn = async (request, response, next) => {
   if (request.cookies.jwt) {
     // 1) token exists
-    token = request.cookies.jwt;
+    try {
+      token = request.cookies.jwt;
 
-    // 2) is valid
-    const decodedPayload = await util.promisify(jwt.verify)(
-      token,
-      process.env.JWT_SECRET
-    );
+      // 2) is valid
+      const decodedPayload = await util.promisify(jwt.verify)(
+        token,
+        process.env.JWT_SECRET
+      );
 
-    // 3) check if user has been deleted in the meantime
-    const user = await User.findById(decodedPayload.id);
-    if (!user) return next();
+      // 3) check if user has been deleted in the meantime
+      const user = await User.findById(decodedPayload.id);
+      if (!user) return next();
 
-    // 4) user changed password after token was issued
-    if (user.hasPasswordChanged(decodedPayload.iat)) {
+      // 4) user changed password after token was issued
+      if (user.hasPasswordChanged(decodedPayload.iat)) {
+        return next();
+      }
+
+      // User is indeed logged in.
+      response.locals.user = user;
+      return next();
+    } catch (error) {
       return next();
     }
-
-    // User is indeed logged in.
-    response.locals.user = user;
-    return next();
   }
   next();
-});
+};
 
 exports.restrictTo = (...roles) => {
   return (request, response, next) => {
@@ -146,6 +150,15 @@ exports.loginUser = catchAsync(async (request, response) => {
     throw new AppError("Incorrect email or password", 401);
 
   createSendToken(user, 200, response);
+});
+
+exports.logoutUser = catchAsync(async (request, response) => {
+  response.cookie("jwt", "LoggedOut", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  response.status(200).json({ status: "success" });
 });
 
 exports.forgotPassword = catchAsync(async (request, response, next) => {

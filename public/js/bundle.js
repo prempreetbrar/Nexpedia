@@ -24577,7 +24577,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       alert.remove();
   }
 
-  // public/js/login.js
+  // public/js/log.js
   async function login(email, password) {
     try {
       const response = await axios_default({
@@ -24598,10 +24598,24 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       showAlert("error", error.response.data.message);
     }
   }
+  async function logout() {
+    try {
+      const response = await axios_default({
+        method: "GET",
+        url: "http://localhost:3000/api/v1/users/logout"
+      });
+      if (response.data.status === "success") {
+        location.reload(true);
+      }
+    } catch (error) {
+      showAlert("error", "Error logging out! Try again.");
+    }
+  }
 
   // public/js/index.js
   var mapBox = document.getElementById("map");
   var loginForm = document.querySelector(".form");
+  var logoutButton = document.querySelector(".nav__el--logout");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     displayMap(locations);
@@ -24613,6 +24627,9 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       const password = document.getElementById("password").value;
       login(email, password);
     });
+  }
+  if (logoutButton) {
+    logoutButton.addEventListener("click", logout);
   }
 })();
 /*! Bundled license information:
