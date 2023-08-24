@@ -24,8 +24,8 @@ module.exports = (error, request, response, next) => {
   }
 
   if (process.env.NODE_ENV === "production") {
-    sendErrorProd(detailedError, response);
-  } else sendErrorDev(detailedError, response);
+    sendErrorProd(detailedError, request, response);
+  } else sendErrorDev(detailedError, request, response);
 };
 
 function handleDBCastError(error) {
@@ -65,31 +65,61 @@ function handleJSONTokenExpiredError() {
   return new AppError("Your token has expired. Please log in again!", 401);
 }
 
-function sendErrorDev(error, response) {
-  return response.status(error.statusCode).json({
-    error: error,
-    status: error.status,
-    message: error.message,
-    stack: error.stack,
-  });
-}
+function sendErrorDev(error, request, response) {
+  console.error("Error: ", error);
 
-function sendErrorProd(error, response) {
-  if (!error.isOperational) {
-    sendErrorNonOperational(error, response);
-  } else {
+  // api
+  if (request.originalUrl.startsWith("/api")) {
     return response.status(error.statusCode).json({
+      error: error,
       status: error.status,
+      message: error.message,
+      stack: error.stack,
+    });
+
+    // rendered website
+  } else {
+    return response.status(error.statusCode).render("error", {
+      title: "Something went wrong!",
       message: error.message,
     });
   }
 }
 
-function sendErrorNonOperational(error, response) {
-  console.error("Error: ", error);
+function sendErrorProd(error, request, response) {
+  if (request.originalUrl.startsWith("/api")) {
+    if (!error.isOperational) {
+      sendErrorNonOperational(error, response, false);
+    } else {
+      return response.status(error.statusCode).json({
+        status: error.status,
+        message: error.message,
+      });
+    }
+  } else {
+    if (!error.isOperational) {
+      sendErrorNonOperational(error, response, true);
+    } else {
+      return response.status(error.statusCode).render("error", {
+        title: "Something went wrong!",
+        message: error.message,
+      });
+    }
+  }
+}
 
-  return response.status(500).json({
-    status: "error",
-    message: "Something went very wrong! Please contact support.",
-  });
+function sendErrorNonOperational(error, response, rendered) {
+  if (rendered) {
+    return response.status(500).render("error", {
+      title: "Something went wrong!",
+      message: "Something went very wrong! Please contact support.",
+    });
+  } else {
+    console.error("Error: ", error);
+
+    return response.status(500).json({
+      status: "error",
+      message: "Something went very wrong! Please contact support.",
+    });
+  }
 }
