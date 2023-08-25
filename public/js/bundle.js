@@ -24612,9 +24612,31 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     }
   }
 
+  // public/js/updateSettings.js
+  async function updateData(newEmail, newName) {
+    try {
+      const response = await axios_default({
+        method: "PATCH",
+        url: "http://localhost:3000/api/v1/users/me",
+        data: {
+          email: newEmail,
+          name: newName
+        }
+      });
+      if (response.data.status === "success") {
+        showAlert("success", "Data updated successfully!");
+      } else {
+        showAlert("error", "Something went wrong. Please contact support.");
+      }
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
+  }
+
   // public/js/index.js
   var mapBox = document.getElementById("map");
-  var loginForm = document.querySelector(".form");
+  var loginForm = document.querySelector(".login--form");
+  var dataForm = document.querySelector(".form-user-data");
   var logoutButton = document.querySelector(".nav__el--logout");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -24623,13 +24645,21 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = loginForm.getElementById("email").value;
+      const password = loginForm.getElementById("password").value;
       login(email, password);
     });
   }
   if (logoutButton) {
     logoutButton.addEventListener("click", logout);
+  }
+  if (dataForm) {
+    dataForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newEmail = document.getElementById("email").value;
+      const newName = document.getElementById("name").value;
+      updateData(newEmail, newName);
+    });
   }
 })();
 /*! Bundled license information:

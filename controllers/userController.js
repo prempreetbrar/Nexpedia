@@ -18,16 +18,18 @@ exports.updateMe = catchAsync(async (request, response) => {
       "This route is NOT for password changes. Please use /changePassword."
     );
 
-  const filters = ["name", "email"];
+  const filters = new Set(["name", "email"]);
   const filteredBody = {};
   for (const key in request.body) {
-    if (key in filters) filteredBody[key] = request.body[key];
+    if (filters.has(key)) {
+      filteredBody[key] = request.body[key];
+    }
   }
 
   const user = await User.findByIdAndUpdate(request.user.id, filteredBody, {
     new: true,
     runValidators: true,
-  }).select(filters.join(" "));
+  }).select(Array.from(filters).join(" "));
 
   response.status(200).json({
     status: "success",
