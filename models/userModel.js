@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
       validator: function (value) {
         return value === this.get("password");
       },
-      message: "{VALUE} does not match password entered above",
+      message: "Confirm password does not match new password.",
     },
   },
 });

@@ -49,7 +49,12 @@ function handleDBValidationError(error) {
     const keyValue = errors[error].value;
     const errorMessage = errors[error].message;
 
-    const responseOutput = `${keyName}: ${keyValue} - ${errorMessage}     `;
+    let responseOutput;
+    if (keyName === "passwordConfirm") {
+      responseOutput = errorMessage;
+    } else {
+      responseOutput = `${keyName}: ${keyValue} - ${errorMessage}     `;
+    }
     messages.push(responseOutput);
   }
 
