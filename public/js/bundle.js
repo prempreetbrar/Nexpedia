@@ -24613,20 +24613,19 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   }
 
   // public/js/updateSettings.js
-  async function updateData(newEmail, newName) {
+  async function updateSettings(data, type) {
     try {
       const response = await axios_default({
         method: "PATCH",
-        url: "http://localhost:3000/api/v1/users/me",
-        data: {
-          email: newEmail,
-          name: newName
-        }
+        url: type === "Password" ? "http://localhost:3000/api/v1/users/changePassword" : "http://localhost:3000/api/v1/users/me",
+        data
       });
       if (response.data.status === "success") {
-        showAlert("success", "Data updated successfully!");
+        showAlert("success", `${type} updated`);
+        return true;
       } else {
         showAlert("error", "Something went wrong. Please contact support.");
+        return false;
       }
     } catch (error) {
       showAlert("error", error.response.data.message);
@@ -24637,6 +24636,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var mapBox = document.getElementById("map");
   var loginForm = document.querySelector(".login--form");
   var dataForm = document.querySelector(".form-user-data");
+  var passwordForm = document.querySelector(".form-user-password");
   var logoutButton = document.querySelector(".nav__el--logout");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -24650,16 +24650,36 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       login(email, password);
     });
   }
-  if (logoutButton) {
-    logoutButton.addEventListener("click", logout);
-  }
   if (dataForm) {
     dataForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const newEmail = document.getElementById("email").value;
       const newName = document.getElementById("name").value;
-      updateData(newEmail, newName);
+      updateSettings({ email: newEmail, name: newName }, "Data");
     });
+  }
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const currentPassword = document.getElementById("password-current").value;
+      const newPassword = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("password-confirm").value;
+      const saveButton = document.getElementById("save-password");
+      saveButton.textContent = "Updating...";
+      const didSucceed = await updateSettings(
+        { currentPassword, newPassword, confirmPassword },
+        "Password"
+      );
+      saveButton.textContent = "Save password";
+      if (didSucceed) {
+        document.getElementById("password-current").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("password-confirm").value = "";
+      }
+    });
+  }
+  if (logoutButton) {
+    logoutButton.addEventListener("click", logout);
   }
 })();
 /*! Bundled license information:

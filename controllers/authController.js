@@ -245,15 +245,15 @@ exports.changePassword = catchAsync(async (request, response, next) => {
 
   if (
     !(await userWithPassword.isPasswordCorrect(
-      request.body.passwordCurrent,
+      request.body.currentPassword,
       userWithPassword.password
     ))
   )
     throw new AppError("The existing password provided was incorrect.", 401);
 
   // 3) Update password
-  userWithPassword.password = request.body.password;
-  userWithPassword.passwordConfirm = request.body.passwordConfirm;
+  userWithPassword.password = request.body.newPassword;
+  userWithPassword.passwordConfirm = request.body.confirmPassword;
   await userWithPassword.save();
 
   // 4) Send new JWT token with updated password
