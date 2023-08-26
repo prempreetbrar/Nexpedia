@@ -20,6 +20,7 @@ const {
   deleteUser,
   updateMe,
   deleteMe,
+  uploadMyPhoto,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -32,7 +33,11 @@ router.patch("/resetPassword/:token", resetPassword);
 
 router.use(protect);
 router.patch("/changePassword", changePassword);
-router.route("/me").get(setUserId, getUser).patch(updateMe).delete(deleteMe);
+router
+  .route("/me")
+  .get(setUserId, getUser)
+  .patch(uploadMyPhoto, updateMe)
+  .delete(deleteMe);
 
 router.use(restrictTo("admin"));
 router.route("/").get(getAllUsers).post(createUser);

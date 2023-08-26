@@ -1,7 +1,36 @@
+const multer = require("multer");
 const User = require("../models/userModel");
 const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+
+const multerStorage = multer.diskStorage({
+  destination: (request, file, callback) => {
+    callback(null, "public/img/users");
+  },
+  filename: (request, file, callback) => {
+    const fileExtension = file.mimetype.split("/").pop();
+    const fileName = `user-${request.user.id}.${fileExtension}`;
+    callback(null, fileName);
+  },
+});
+
+const multerFilter = (request, file, callback) => {
+  if (file.mimetype.startsWith("image")) {
+    callback(null, true);
+  } else {
+    callback(
+      new AppError("Not an image! Please upload only images.", 400),
+      false
+    );
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+exports.uploadMyPhoto = upload.single("photo");
 
 exports.setUserId = (request, response, next) => {
   request.params.id = request.user.id;
