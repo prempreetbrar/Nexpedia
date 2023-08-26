@@ -1,20 +1,11 @@
 const multer = require("multer");
+const sharp = require("sharp");
 const User = require("../models/userModel");
 const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-const multerStorage = multer.diskStorage({
-  destination: (request, file, callback) => {
-    callback(null, "public/img/users");
-  },
-  filename: (request, file, callback) => {
-    const fileExtension = file.mimetype.split("/").pop();
-    const fileName = `user-${request.user.id}.${fileExtension}`;
-    callback(null, fileName);
-  },
-});
-
+const multerStorage = multer.memoryStorage();
 const multerFilter = (request, file, callback) => {
   if (file.mimetype.startsWith("image")) {
     callback(null, true);
@@ -31,6 +22,22 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 exports.uploadMyPhoto = upload.single("photo");
+exports.resizeMyPhoto = (request, response, next) => {
+  if (!request.file) {
+    return next();
+  }
+
+  const fileName = `user-${request.user.id}.jpeg`;
+  request.file.filename = fileName;
+
+  sharp(request.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${request.file.filename}`);
+
+  next();
+};
 
 exports.setUserId = (request, response, next) => {
   request.params.id = request.user.id;
