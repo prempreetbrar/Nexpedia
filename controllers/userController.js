@@ -22,7 +22,7 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 exports.uploadMyPhoto = upload.single("photo");
-exports.resizeMyPhoto = (request, response, next) => {
+exports.resizeMyPhoto = catchAsync(async (request, response, next) => {
   if (!request.file) {
     return next();
   }
@@ -30,14 +30,14 @@ exports.resizeMyPhoto = (request, response, next) => {
   const fileName = `user-${request.user.id}.jpeg`;
   request.file.filename = fileName;
 
-  sharp(request.file.buffer)
+  await sharp(request.file.buffer)
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${request.file.filename}`);
 
   next();
-};
+});
 
 exports.setUserId = (request, response, next) => {
   request.params.id = request.user.id;
