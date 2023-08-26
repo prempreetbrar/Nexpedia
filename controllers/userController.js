@@ -1,26 +1,10 @@
-const multer = require("multer");
 const sharp = require("sharp");
 const User = require("../models/userModel");
 const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const upload = require("../utils/multer");
 
-const multerStorage = multer.memoryStorage();
-const multerFilter = (request, file, callback) => {
-  if (file.mimetype.startsWith("image")) {
-    callback(null, true);
-  } else {
-    callback(
-      new AppError("Not an image! Please upload only images.", 400),
-      false
-    );
-  }
-};
-
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-});
 exports.uploadMyPhoto = upload.single("photo");
 exports.resizeMyPhoto = catchAsync(async (request, response, next) => {
   if (!request.file) {
