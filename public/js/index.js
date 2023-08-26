@@ -25,9 +25,12 @@ if (loginForm) {
 if (dataForm) {
   dataForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const newEmail = document.getElementById("email").value;
-    const newName = document.getElementById("name").value;
-    updateSettings({ email: newEmail, name: newName }, "Data");
+    const form = new FormData();
+    form.append("name", document.getElementById("name").value);
+    form.append("email", document.getElementById("email").value);
+    form.append("photo", document.getElementById("photo").files[0]);
+
+    updateSettings(form, "Data");
   });
 }
 
