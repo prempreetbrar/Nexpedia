@@ -47,12 +47,15 @@ exports.updateMe = catchAsync(async (request, response) => {
       "This route is NOT for password changes. Please use /changePassword."
     );
 
-  const filters = new Set(["name", "email"]);
+  const filters = new Set(["name", "photo", "email"]);
   const filteredBody = {};
   for (const key in request.body) {
     if (filters.has(key)) {
       filteredBody[key] = request.body[key];
     }
+  }
+  if (filters.has("photo") && request.file) {
+    filteredBody["photo"] = request.file.filename;
   }
 
   const user = await User.findByIdAndUpdate(request.user.id, filteredBody, {
