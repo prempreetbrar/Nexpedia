@@ -1,24 +1,60 @@
 const nodemailer = require("nodemailer");
+const pug = require("pug");
+const htmlToText = require("html-to-text");
 
-module.exports = async function (options) {
-  // 1) create a transporter
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
+module.exports = class Email {
+  #to;
+  #firstName;
+  #url;
+  #from;
 
-  // 2) define the email options
-  const mailOptions = {
-    from: "Nexpedia Inc. <info@nexpedia.com>",
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-  };
+  constructor(user, url) {
+    this.#to = user.email;
+    this.#firstName = user.name.split(" ").unshift();
+    this.#url = url;
+    this.#from = `Nexpedia Inc. <${process.env.EMAIL_FROM}>`;
+  }
 
-  // 3) actually send the email
-  await transporter.sendMail(mailOptions);
+  #newTransport() {
+    if (process.env.NODE_ENV === "production") {
+      // sendgrid
+      return "sendgrid";
+    }
+    return nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+  }
+
+  async #send(template, subject) {
+    // render HTML based on pug template
+    const html = pug.renderFile(
+      `${__dirname}/../views/emails/${template}.pug`,
+      {
+        firstName: this.#firstName,
+        url: this.#url,
+        subject,
+      }
+    );
+
+    // define email options
+    const mailOptions = {
+      from: this.#from,
+      to: this.#to,
+      subject,
+      html,
+      text: htmlToText.fromString(html),
+    };
+
+    // create a transporter and send email
+    await this.#newTransport().sendMail(mailOptions);
+  }
+
+  async sendWelcome() {
+    await this.#send("welcome", "Welcome to the Nexpedia Family!");
+  }
 };
