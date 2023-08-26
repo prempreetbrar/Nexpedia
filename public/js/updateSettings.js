@@ -14,6 +14,13 @@ export async function updateSettings(data, type) {
 
     if (response.data.status === "success") {
       showAlert("success", `${type} updated`);
+
+      if (data.has("photo")) {
+        window.setTimeout(() => {
+          location.reload(true);
+        }, 2000);
+      }
+
       return true;
     } else {
       showAlert("error", "Something went wrong. Please contact support.");
@@ -21,5 +28,13 @@ export async function updateSettings(data, type) {
     }
   } catch (error) {
     showAlert("error", error.response.data.message);
+  }
+}
+
+export function imageURLPreview(upload, newPreview, newPreviewLabel) {
+  const [newPhoto] = upload.files;
+  if (newPhoto) {
+    newPreview.src = URL.createObjectURL(newPhoto);
+    newPreviewLabel.innerHTML = upload.value.split("\\").pop();
   }
 }

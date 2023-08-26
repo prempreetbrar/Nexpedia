@@ -24622,6 +24622,11 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       });
       if (response.data.status === "success") {
         showAlert("success", `${type} updated`);
+        if (data.has("photo")) {
+          window.setTimeout(() => {
+            location.reload(true);
+          }, 2e3);
+        }
         return true;
       } else {
         showAlert("error", "Something went wrong. Please contact support.");
@@ -24631,6 +24636,13 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       showAlert("error", error.response.data.message);
     }
   }
+  function imageURLPreview(upload2, newPreview, newPreviewLabel) {
+    const [newPhoto] = upload2.files;
+    if (newPhoto) {
+      newPreview.src = URL.createObjectURL(newPhoto);
+      newPreviewLabel.innerHTML = upload2.value.split("\\").pop();
+    }
+  }
 
   // public/js/index.js
   var mapBox = document.getElementById("map");
@@ -24638,6 +24650,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var dataForm = document.querySelector(".form-user-data");
   var passwordForm = document.querySelector(".form-user-password");
   var logoutButton = document.querySelector(".nav__el--logout");
+  var upload = document.querySelector("#photo");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     displayMap(locations);
@@ -24658,6 +24671,25 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       form.append("email", document.getElementById("email").value);
       form.append("photo", document.getElementById("photo").files[0]);
       updateSettings(form, "Data");
+    });
+  }
+  if (upload) {
+    const originalPhoto = document.querySelector(".form__photo-upload");
+    let newPhoto = null;
+    upload.addEventListener("change", function() {
+      if (upload.files.length > 0) {
+        if (newPhoto) {
+          originalPhoto.nextSibling.remove();
+        }
+        newPhoto = ("afterend", `<div class="form__group form__photo-upload">
+          <img class="form__user-photo" src="img/users/user-64e951c0f1a9732c52d882c6.jpeg" alt="User photo">
+          <p id="new-photo-label">Label</p>
+        </div>`);
+        originalPhoto.insertAdjacentHTML("afterend", newPhoto);
+        const newPreview = document.querySelectorAll(".form__user-photo")[1];
+        const newPreviewLabel = document.getElementById("new-photo-label");
+        imageURLPreview(upload, newPreview, newPreviewLabel);
+      }
     });
   }
   if (passwordForm) {
