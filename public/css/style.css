@@ -154,6 +154,10 @@ body {
   background-color: var(--error1);
 }
 
+.special {
+  color: var(--primary2-color);
+}
+
 .heading-secondary {
   font-size: 2.25rem;
   font-family: var(--heading-font);

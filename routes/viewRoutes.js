@@ -15,6 +15,6 @@ router.use(isLoggedIn);
 router.get("/", getOverview);
 router.get("/login", getLogin);
 router.get("/tours/:slug", getTour);
-router.get("/resetPassword/:resetToken", getResetPassword);
+router.get("/resetPassword/:email/:resetToken", getResetPassword);
 
 module.exports = router;

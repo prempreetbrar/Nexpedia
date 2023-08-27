@@ -24,7 +24,8 @@ exports.getLogin = (request, response) => {
 };
 
 exports.getResetPassword = (request, response) => {
-  response.locals.token = request.params.resetToken;
+  response.locals.resetToken = request.params.resetToken;
+  response.locals.email = request.params.email;
   response.status(200).render("resetPassword", {
     title: "Reset your password",
   });

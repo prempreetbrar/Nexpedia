@@ -175,7 +175,7 @@ exports.forgotPassword = catchAsync(async (request, response, next) => {
   const resetToken = user.createPasswordResetToken();
   const resetURL = `${request.protocol}://${request.get(
     "host"
-  )}/resetPassword/${resetToken}`;
+  )}/resetPassword/${request.body.email}/${resetToken}`;
 
   // password - select: false. Therefore, our user object does not have a password.
   // However, password - required: true. So, when we go to save, we would get an error.
