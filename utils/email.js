@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
 const pug = require("pug");
-const htmlToText = require("html-to-text");
+const { convert } = require("html-to-text");
 
 module.exports = class Email {
   #to;
@@ -10,7 +10,7 @@ module.exports = class Email {
 
   constructor(user, url) {
     this.#to = user.email;
-    this.#firstName = user.name.split(" ").unshift();
+    this.#firstName = user.name.split(" ").shift();
     this.#url = url;
     this.#from = `Nexpedia Inc. <${process.env.EMAIL_FROM}>`;
   }
@@ -47,7 +47,7 @@ module.exports = class Email {
       to: this.#to,
       subject,
       html,
-      text: htmlToText.fromString(html),
+      text: convert(html),
     };
 
     // create a transporter and send email
