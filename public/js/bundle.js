@@ -24614,18 +24614,33 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
 
   // public/js/updateSettings.js
   async function updateSettings(data, type) {
+    let url;
+    switch (type) {
+      case "Change password":
+        url = "http://localhost:3000/api/v1/users/changePassword";
+        break;
+      case "Reset password":
+        url = `http://localhost:3000/api/v1/users/resetPassword/${data.token}`;
+        break;
+      default:
+        url = "http://localhost:3000/api/v1/users/me";
+    }
     try {
       const response = await axios_default({
         method: "PATCH",
-        url: type === "Password" ? "http://localhost:3000/api/v1/users/changePassword" : "http://localhost:3000/api/v1/users/me",
+        url,
         data
       });
       if (response.data.status === "success") {
-        showAlert("success", `${type} updated`);
-        if (data.has("photo")) {
+        showAlert("success", `${type} succeeded`);
+        if (data instanceof FormData && data.has("photo")) {
           window.setTimeout(() => {
             location.reload(true);
-          }, 2e3);
+          }, 1500);
+        } else if (data instanceof Object && "token" in data) {
+          window.setTimeout(() => {
+            location.assign("/me");
+          }, 1500);
         }
         return true;
       } else {
@@ -24649,6 +24664,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var loginForm = document.querySelector(".login--form");
   var dataForm = document.querySelector(".form-user-data");
   var passwordForm = document.querySelector(".form-user-password");
+  var passwordResetForm = document.querySelector(".form-user-password-reset");
   var logoutButton = document.querySelector(".nav__el--logout");
   var upload = document.querySelector("#photo");
   if (mapBox) {
@@ -24671,7 +24687,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       form.append("email", document.getElementById("email").value);
       if (document.getElementById("photo").files.length > 0)
         form.append("photo", document.getElementById("photo").files[0]);
-      updateSettings(form, "Data");
+      updateSettings(form, "Update settings");
     });
   }
   if (upload) {
@@ -24703,13 +24719,34 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       saveButton.textContent = "Updating...";
       const didSucceed = await updateSettings(
         { currentPassword, newPassword, confirmPassword },
-        "Password"
+        "Change password"
       );
       saveButton.textContent = "Save password";
       if (didSucceed) {
         document.getElementById("password-current").value = "";
         document.getElementById("password").value = "";
         document.getElementById("password-confirm").value = "";
+      }
+    });
+  }
+  if (passwordResetForm) {
+    passwordResetForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newPassword = document.getElementById("password-new-reset").value;
+      const confirmPassword = document.getElementById(
+        "password-confirm-reset"
+      ).value;
+      const token = document.querySelector(".hidden").innerHTML;
+      const resetButton = document.getElementById("password-reset-btn");
+      resetButton.textContent = "Updating...";
+      const didSucceed = await updateSettings(
+        { newPassword, confirmPassword, token },
+        "Reset password"
+      );
+      resetButton.textContent = "Reset password";
+      if (didSucceed) {
+        document.getElementById("password-new-reset").value = "";
+        document.getElementById("password-confirm-reset").value = "";
       }
     });
   }

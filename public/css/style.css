@@ -864,6 +864,10 @@ body {
   }
 }
 
+.hidden {
+  display: none;
+}
+
 .nav {
   display: -webkit-box;
   display: -ms-flexbox;

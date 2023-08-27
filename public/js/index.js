@@ -6,6 +6,7 @@ const mapBox = document.getElementById("map");
 const loginForm = document.querySelector(".login--form");
 const dataForm = document.querySelector(".form-user-data");
 const passwordForm = document.querySelector(".form-user-password");
+const passwordResetForm = document.querySelector(".form-user-password-reset");
 const logoutButton = document.querySelector(".nav__el--logout");
 
 const upload = document.querySelector("#photo");
@@ -33,7 +34,7 @@ if (dataForm) {
     if (document.getElementById("photo").files.length > 0)
       form.append("photo", document.getElementById("photo").files[0]);
 
-    updateSettings(form, "Data");
+    updateSettings(form, "Update settings");
   });
 }
 
@@ -73,7 +74,7 @@ if (passwordForm) {
     saveButton.textContent = "Updating...";
     const didSucceed = await updateSettings(
       { currentPassword, newPassword, confirmPassword },
-      "Password"
+      "Change password"
     );
     saveButton.textContent = "Save password";
 
@@ -81,6 +82,30 @@ if (passwordForm) {
       document.getElementById("password-current").value = "";
       document.getElementById("password").value = "";
       document.getElementById("password-confirm").value = "";
+    }
+  });
+}
+
+if (passwordResetForm) {
+  passwordResetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const newPassword = document.getElementById("password-new-reset").value;
+    const confirmPassword = document.getElementById(
+      "password-confirm-reset"
+    ).value;
+    const token = document.querySelector(".hidden").innerHTML;
+
+    const resetButton = document.getElementById("password-reset-btn");
+    resetButton.textContent = "Updating...";
+    const didSucceed = await updateSettings(
+      { newPassword, confirmPassword, token },
+      "Reset password"
+    );
+    resetButton.textContent = "Reset password";
+
+    if (didSucceed) {
+      document.getElementById("password-new-reset").value = "";
+      document.getElementById("password-confirm-reset").value = "";
     }
   });
 }

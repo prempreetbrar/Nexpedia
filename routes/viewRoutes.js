@@ -4,6 +4,7 @@ const {
   getTour,
   getLogin,
   getAccount,
+  getResetPassword,
 } = require("../controllers/viewController");
 const { isLoggedIn, protect } = require("../controllers/authController");
 
@@ -14,5 +15,6 @@ router.use(isLoggedIn);
 router.get("/", getOverview);
 router.get("/login", getLogin);
 router.get("/tours/:slug", getTour);
+router.get("/resetPassword/:resetToken", getResetPassword);
 
 module.exports = router;

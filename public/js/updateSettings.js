@@ -2,25 +2,37 @@ import axios from "axios";
 import showAlert from "./alerts";
 
 export async function updateSettings(data, type) {
+  let url;
+  switch (type) {
+    case "Change password":
+      url = "http://localhost:3000/api/v1/users/changePassword";
+      break;
+    case "Reset password":
+      url = `http://localhost:3000/api/v1/users/resetPassword/${data.token}`;
+      break;
+    default:
+      url = "http://localhost:3000/api/v1/users/me";
+  }
+
   try {
     const response = await axios({
       method: "PATCH",
-      url:
-        type === "Password"
-          ? "http://localhost:3000/api/v1/users/changePassword"
-          : "http://localhost:3000/api/v1/users/me",
+      url,
       data,
     });
 
     if (response.data.status === "success") {
-      showAlert("success", `${type} updated`);
+      showAlert("success", `${type} succeeded`);
 
-      if (data.has("photo")) {
+      if (data instanceof FormData && data.has("photo")) {
         window.setTimeout(() => {
           location.reload(true);
-        }, 2000);
+        }, 1500);
+      } else if (data instanceof Object && "token" in data) {
+        window.setTimeout(() => {
+          location.assign("/me");
+        }, 1500);
       }
-
       return true;
     } else {
       showAlert("error", "Something went wrong. Please contact support.");

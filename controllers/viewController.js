@@ -23,6 +23,13 @@ exports.getLogin = (request, response) => {
   });
 };
 
+exports.getResetPassword = (request, response) => {
+  response.locals.token = request.params.resetToken;
+  response.status(200).render("resetPassword", {
+    title: "Reset your password",
+  });
+};
+
 exports.getTour = catchAsync(async (request, response) => {
   const tour = await Tour.findOne({ slug: request.params.slug }).populate({
     path: "reviews",
