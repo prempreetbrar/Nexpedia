@@ -184,6 +184,10 @@ body {
   font-size: 3.5rem;
 }
 
+.footlink {
+  font-size: 1.5rem;
+}
+
 .heading-primary,
 .heading-tertirary {
   font-family: var(--heading-font);

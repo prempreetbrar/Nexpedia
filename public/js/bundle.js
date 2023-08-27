@@ -24611,6 +24611,20 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       showAlert("error", "Error logging out! Try again.");
     }
   }
+  async function forgot(data) {
+    try {
+      const response = await axios_default({
+        method: "POST",
+        url: "http://localhost:3000/api/v1/users/forgotPassword",
+        data
+      });
+      if (response.data.status === "success") {
+        showAlert("success", `Sent email to ${data.email}!`);
+      }
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+    }
+  }
 
   // public/js/updateSettings.js
   async function updateSettings(data, type) {
@@ -24665,6 +24679,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var dataForm = document.querySelector(".form-user-data");
   var passwordForm = document.querySelector(".form-user-password");
   var passwordResetForm = document.querySelector(".form-user-password-reset");
+  var passwordForgotForm = document.querySelector(".form-user-password-forgot");
   var logoutButton = document.querySelector(".nav__el--logout");
   var upload = document.querySelector("#photo");
   if (mapBox) {
@@ -24748,6 +24763,16 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         document.getElementById("password-new-reset").value = "";
         document.getElementById("password-confirm-reset").value = "";
       }
+    });
+  }
+  if (passwordForgotForm) {
+    passwordForgotForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const resetButton = document.getElementById("password-reset-btn");
+      resetButton.textContent = "Sending...";
+      await forgot({ email });
+      resetButton.textContent = "Continue";
     });
   }
   if (logoutButton) {

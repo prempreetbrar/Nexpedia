@@ -1,5 +1,5 @@
 import displayMap from "./mapbox";
-import login, { logout } from "./log";
+import login, { forgot, logout } from "./log";
 import { updateSettings, imageURLPreview } from "./updateSettings";
 
 const mapBox = document.getElementById("map");
@@ -7,6 +7,7 @@ const loginForm = document.querySelector(".login--form");
 const dataForm = document.querySelector(".form-user-data");
 const passwordForm = document.querySelector(".form-user-password");
 const passwordResetForm = document.querySelector(".form-user-password-reset");
+const passwordForgotForm = document.querySelector(".form-user-password-forgot");
 const logoutButton = document.querySelector(".nav__el--logout");
 
 const upload = document.querySelector("#photo");
@@ -107,6 +108,18 @@ if (passwordResetForm) {
       document.getElementById("password-new-reset").value = "";
       document.getElementById("password-confirm-reset").value = "";
     }
+  });
+}
+
+if (passwordForgotForm) {
+  passwordForgotForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const resetButton = document.getElementById("password-reset-btn");
+    resetButton.textContent = "Sending...";
+
+    await forgot({ email });
+    resetButton.textContent = "Continue";
   });
 }
 

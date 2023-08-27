@@ -31,6 +31,12 @@ exports.getResetPassword = (request, response) => {
   });
 };
 
+exports.getForgotPassword = (request, response) => {
+  response.status(200).render("forgotPassword", {
+    title: "Forgot your password?",
+  });
+};
+
 exports.getTour = catchAsync(async (request, response) => {
   const tour = await Tour.findOne({ slug: request.params.slug }).populate({
     path: "reviews",

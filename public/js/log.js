@@ -37,3 +37,19 @@ export async function logout() {
     showAlert("error", "Error logging out! Try again.");
   }
 }
+
+export async function forgot(data) {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: "http://localhost:3000/api/v1/users/forgotPassword",
+      data,
+    });
+
+    if (response.data.status === "success") {
+      showAlert("success", `Sent email to ${data.email}!`);
+    }
+  } catch (error) {
+    showAlert("error", error.response.data.message);
+  }
+}
