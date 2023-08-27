@@ -186,11 +186,7 @@ exports.forgotPassword = catchAsync(async (request, response, next) => {
   await user.save({ validateBeforeSave: false });
 
   try {
-    await Email({
-      email: user.email,
-      subject: "Your password reset token (only valid for 10 minutes).",
-      message,
-    });
+    await new Email(user, resetURL).sendPasswordReset();
 
     response.status(200).json({
       status: "success",
