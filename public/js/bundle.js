@@ -24669,7 +24669,8 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       const form = new FormData();
       form.append("name", document.getElementById("name").value);
       form.append("email", document.getElementById("email").value);
-      form.append("photo", document.getElementById("photo").files[0]);
+      if (document.getElementById("photo").files.length > 0)
+        form.append("photo", document.getElementById("photo").files[0]);
       updateSettings(form, "Data");
     });
   }
