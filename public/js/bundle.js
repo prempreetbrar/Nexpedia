@@ -24673,6 +24673,23 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     }
   }
 
+  // public/js/stripe.js
+  var stripe = Stripe(
+    "pk_test_51NjYI9LAKft78KRlgHodoQ5wSZ0PSC98lusruzNtW8HJgcSgyTha2jVZc4VxhMJ8sHrtAmNfFKlhHTgQjbj4KKRG00M0xRXUHL"
+  );
+  async function bookTour(tourId) {
+    try {
+      const checkoutSession = await axios_default.get(
+        `http://localhost:3000/api/v1/bookings/checkout/${tourId}`
+      );
+      await stripe.redirectToCheckout({
+        sessionId: checkoutSession.data.session.id
+      });
+    } catch (error) {
+      showAlert("error", error);
+    }
+  }
+
   // public/js/index.js
   var mapBox = document.getElementById("map");
   var loginForm = document.querySelector(".login--form");
@@ -24681,6 +24698,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var passwordResetForm = document.querySelector(".form-user-password-reset");
   var passwordForgotForm = document.querySelector(".form-user-password-forgot");
   var logoutButton = document.querySelector(".nav__el--logout");
+  var bookButton = document.getElementById("book-tour");
   var upload = document.querySelector("#photo");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -24777,6 +24795,13 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   }
   if (logoutButton) {
     logoutButton.addEventListener("click", logout);
+  }
+  if (bookButton) {
+    bookButton.addEventListener("click", async (e) => {
+      e.target.textContent = "Processing...";
+      const { tourId } = e.target.dataset;
+      await bookTour(tourId);
+    });
   }
 })();
 /*! Bundled license information:

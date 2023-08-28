@@ -37,8 +37,6 @@ exports.getCheckout = catchAsync(async (request, response, next) => {
   // 3) send the checkout station to the client
   response.status(200).json({
     status: "success",
-    data: {
-      session,
-    },
+    session,
   });
 });
