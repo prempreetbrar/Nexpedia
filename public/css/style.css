@@ -189,12 +189,18 @@ body {
 }
 
 .heading-primary,
-.heading-tertirary {
+.heading-tertirary,
+.heading-primary-purple {
   font-family: var(--heading-font);
   color: var(--white);
   text-transform: uppercase;
   font-weight: 300;
 }
+
+.purple {
+  color: var(--primary2-color);
+}
+
 .heading-primary span,
 .heading-tertirary span {
   font-family: var(--heading-font);
