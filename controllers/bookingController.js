@@ -1,8 +1,8 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Tour = require("../models/tourModel");
+const Booking = require("../models/bookingModel");
 const factory = require("./controllerFactory");
 const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
 
 exports.getCheckout = catchAsync(async (request, response, next) => {
   // 1) get the currently booked tour
@@ -12,7 +12,9 @@ exports.getCheckout = catchAsync(async (request, response, next) => {
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
-    success_url: `${request.protocol}://${request.get("host")}/`,
+    success_url: `${request.protocol}://${request.get("host")}/?tour=${
+      request.params.tourId
+    }&user=${request.user.id}&price=${tour.price}`,
     cancel_url: `${request.protocol}://${request.get("host")}/tour/${
       tour.slug
     }`,
@@ -39,4 +41,16 @@ exports.getCheckout = catchAsync(async (request, response, next) => {
     status: "success",
     session,
   });
+});
+
+exports.createBookingCheckout = catchAsync(async (request, response, next) => {
+  const { tour, user, price } = request.query;
+  if (!tour || !user || !price) return next();
+  await Booking.create({
+    tour,
+    user,
+    price,
+  });
+
+  response.redirect(request.originalUrl.split("?")[0]);
 });
