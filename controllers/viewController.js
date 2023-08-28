@@ -1,6 +1,7 @@
 const Tour = require("../models/tourModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
+const Booking = require("../models/bookingModel");
 
 exports.getOverview = catchAsync(async (request, response) => {
   const tours = await Tour.find();
@@ -16,6 +17,23 @@ exports.getAccount = (request, response) => {
     title: "Your account",
   });
 };
+
+exports.getMyTours = catchAsync(async (request, response) => {
+  // 1) find all bookings
+  const myBookings = await Booking.find({ user: request.user.id }).select(
+    "tour"
+  );
+
+  // 2) get tours connected to bookings
+  const tours = myBookings.map((booking) => booking.tour);
+  if (tours.length === 0) {
+    throw new AppError("You have not booked any tours.", 404);
+  }
+  response.status(200).render("overview", {
+    title: "My Bookings",
+    tours,
+  });
+});
 
 exports.getLogin = (request, response) => {
   response.status(200).render("login", {

@@ -52,5 +52,5 @@ exports.createBookingCheckout = catchAsync(async (request, response, next) => {
     price,
   });
 
-  response.redirect(request.originalUrl.split("?")[0]);
+  response.redirect("/me/bookings");
 });
