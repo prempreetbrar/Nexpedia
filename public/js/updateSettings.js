@@ -5,13 +5,13 @@ export async function updateSettings(data, type) {
   let url;
   switch (type) {
     case "Change password":
-      url = "http://localhost:3000/api/v1/users/changePassword";
+      url = "/api/v1/users/changePassword";
       break;
     case "Reset password":
-      url = `http://localhost:3000/api/v1/users/resetPassword/${data.token}`;
+      url = `/api/v1/users/resetPassword/${data.token}`;
       break;
     default:
-      url = "http://localhost:3000/api/v1/users/me";
+      url = "/api/v1/users/me";
   }
 
   try {
