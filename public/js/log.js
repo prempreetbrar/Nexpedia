@@ -5,7 +5,7 @@ export default async function login(email, password) {
   try {
     const response = await axios({
       method: "POST",
-      url: `http://localhost:3000/api/v1/users/login`,
+      url: `${request.protocol}://${request.get("host")}/api/v1/users/login`,
       data: {
         email,
         password,
@@ -27,7 +27,7 @@ export async function logout() {
   try {
     const response = await axios({
       method: "GET",
-      url: "http://localhost:3000/api/v1/users/logout",
+      url: `${request.protocol}://${request.get("host")}/api/v1/users/logout`,
     });
 
     if (response.data.status === "success") {
@@ -42,7 +42,9 @@ export async function forgot(data) {
   try {
     const response = await axios({
       method: "POST",
-      url: "http://localhost:3000/api/v1/users/forgotPassword",
+      url: `${request.protocol}://${request.get(
+        "host"
+      )}/api/v1/users/forgotPassword`,
       data,
     });
 
