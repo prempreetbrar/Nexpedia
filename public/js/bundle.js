@@ -24582,7 +24582,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     try {
       const response = await axios_default({
         method: "POST",
-        url: `http://localhost:3000/api/v1/users/login`,
+        url: `/api/v1/users/login`,
         data: {
           email,
           password
@@ -24602,7 +24602,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     try {
       const response = await axios_default({
         method: "GET",
-        url: "http://localhost:3000/api/v1/users/logout"
+        url: "/api/v1/users/logout"
       });
       if (response.data.status === "success") {
         location.reload(true);
@@ -24615,7 +24615,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     try {
       const response = await axios_default({
         method: "POST",
-        url: "http://localhost:3000/api/v1/users/forgotPassword",
+        url: "/api/v1/users/forgotPassword",
         data
       });
       if (response.data.status === "success") {
@@ -24629,7 +24629,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     try {
       const response = await axios_default({
         method: "POST",
-        url: "http://localhost:3000/api/v1/users/signup",
+        url: "/api/v1/users/signup",
         data
       });
       if (response.data.status === "success") {
@@ -24648,13 +24648,13 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     let url;
     switch (type) {
       case "Change password":
-        url = "http://localhost:3000/api/v1/users/changePassword";
+        url = "/api/v1/users/changePassword";
         break;
       case "Reset password":
-        url = `http://localhost:3000/api/v1/users/resetPassword/${data.token}`;
+        url = `/api/v1/users/resetPassword/${data.token}`;
         break;
       default:
-        url = "http://localhost:3000/api/v1/users/me";
+        url = "/api/v1/users/me";
     }
     try {
       const response = await axios_default({
@@ -24697,7 +24697,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   async function bookTour(tourId) {
     try {
       const checkoutSession = await axios_default.get(
-        `http://localhost:3000/api/v1/bookings/checkout/${tourId}`
+        `/api/v1/bookings/checkout/${tourId}`
       );
       await stripe.redirectToCheckout({
         sessionId: checkoutSession.data.session.id
