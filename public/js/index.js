@@ -1,9 +1,10 @@
 import displayMap from "./mapbox";
-import login, { forgot, logout } from "./log";
+import login, { forgot, logout, signup } from "./log";
 import { updateSettings, imageURLPreview } from "./updateSettings";
 import bookTour from "./stripe";
 
 const mapBox = document.getElementById("map");
+const signupForm = document.querySelector(".signUp--form");
 const loginForm = document.querySelector(".login--form");
 const dataForm = document.querySelector(".form-user-data");
 const passwordForm = document.querySelector(".form-user-password");
@@ -17,6 +18,28 @@ const upload = document.querySelector("#photo");
 if (mapBox) {
   const locations = JSON.parse(mapBox.dataset.locations);
   displayMap(locations);
+}
+
+if (signupForm) {
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("password-confirm").value;
+
+    const signupButton = document.getElementById("signup");
+    signupButton.textContent = "Creating...";
+    const didSucceed = await signup({ name, email, password, confirmPassword });
+    signupButton.textContent = "Create";
+
+    if (didSucceed) {
+      document.getElementById("name").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("password-confirm").value = "";
+    }
+  });
 }
 
 if (loginForm) {

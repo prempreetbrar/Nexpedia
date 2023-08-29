@@ -132,7 +132,7 @@ exports.signUpUser = catchAsync(async (request, response) => {
     name: request.body.name,
     email: request.body.email,
     password: request.body.password,
-    passwordConfirm: request.body.passwordConfirm,
+    passwordConfirm: request.body.confirmPassword,
   });
 
   await new Email(

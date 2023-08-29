@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
       validator: function (value) {
         return value === this.get("password");
       },
-      message: "Confirm password does not match new password.",
+      message: "Confirm password does not match provided password.",
     },
   },
 });

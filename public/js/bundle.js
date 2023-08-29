@@ -24625,6 +24625,23 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       showAlert("error", error.response.data.message);
     }
   }
+  async function signup(data) {
+    try {
+      const response = await axios_default({
+        method: "POST",
+        url: "http://localhost:3000/api/v1/users/signup",
+        data
+      });
+      if (response.data.status === "success") {
+        showAlert("success", `Welcome!`);
+        window.setTimeout(() => location.assign("/me"), 1500);
+        return true;
+      }
+    } catch (error) {
+      showAlert("error", error.response.data.message);
+      return false;
+    }
+  }
 
   // public/js/updateSettings.js
   async function updateSettings(data, type) {
@@ -24692,6 +24709,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
 
   // public/js/index.js
   var mapBox = document.getElementById("map");
+  var signupForm = document.querySelector(".signUp--form");
   var loginForm = document.querySelector(".login--form");
   var dataForm = document.querySelector(".form-user-data");
   var passwordForm = document.querySelector(".form-user-password");
@@ -24703,6 +24721,25 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     displayMap(locations);
+  }
+  if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("password-confirm").value;
+      const signupButton = document.getElementById("signup");
+      signupButton.textContent = "Creating...";
+      const didSucceed = await signup({ name, email, password, confirmPassword });
+      signupButton.textContent = "Create";
+      if (didSucceed) {
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("password-confirm").value = "";
+      }
+    });
   }
   if (loginForm) {
     loginForm.addEventListener("submit", (e) => {

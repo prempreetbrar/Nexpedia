@@ -53,3 +53,22 @@ export async function forgot(data) {
     showAlert("error", error.response.data.message);
   }
 }
+
+export async function signup(data) {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: "http://localhost:3000/api/v1/users/signup",
+      data,
+    });
+
+    if (response.data.status === "success") {
+      showAlert("success", `Welcome!`);
+      window.setTimeout(() => location.assign("/me"), 1500);
+      return true;
+    }
+  } catch (error) {
+    showAlert("error", error.response.data.message);
+    return false;
+  }
+}
