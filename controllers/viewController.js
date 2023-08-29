@@ -42,10 +42,10 @@ exports.getLogin = (request, response) => {
 };
 
 exports.getResetPassword = (request, response) => {
-  response.locals.resetToken = request.params.resetToken;
-  response.locals.email = request.params.email;
   response.status(200).render("resetPassword", {
     title: "Reset your password",
+    resetToken: request.params.resetToken,
+    email: request.params.email,
   });
 };
 

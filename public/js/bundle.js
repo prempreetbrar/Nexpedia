@@ -24769,7 +24769,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       const confirmPassword = document.getElementById(
         "password-confirm-reset"
       ).value;
-      const token = document.querySelector(".hidden").innerHTML;
+      const token = document.querySelector(".hidden").dataset.token;
       const resetButton = document.getElementById("password-reset-btn");
       resetButton.textContent = "Updating...";
       const didSucceed = await updateSettings(

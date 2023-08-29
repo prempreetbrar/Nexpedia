@@ -96,7 +96,7 @@ if (passwordResetForm) {
     const confirmPassword = document.getElementById(
       "password-confirm-reset"
     ).value;
-    const token = document.querySelector(".hidden").innerHTML;
+    const token = document.querySelector(".hidden").dataset.token;
 
     const resetButton = document.getElementById("password-reset-btn");
     resetButton.textContent = "Updating...";
