@@ -22,3 +22,7 @@ const server = app.listen(PORT, () => {
 });
 
 handleUncaught("unhandledRejection", server);
+process.on("SIGTERM", () => {
+  console.log("SIGTERM RECEIVED; shutting down gracefully.");
+  server.close(() => console.log("Server shut down complete."));
+});
