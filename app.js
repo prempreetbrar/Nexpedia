@@ -104,9 +104,9 @@ app.use(
 app.use(compression());
 
 if (process.env.NODE_ENV === "production") {
-  app.use((req, res, next) => {
-    if (req.header("x-forwarded-proto") !== "https") {
-      res.redirect(`https://${req.header("host")}${req.url}`);
+  app.use((request, response, next) => {
+    if (request.get("x-forwarded-proto") !== "https") {
+      response.redirect(`https://${request.header("host")}${request.url}`);
     } else {
       next();
     }
