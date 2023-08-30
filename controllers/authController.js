@@ -27,7 +27,7 @@ function createSendToken(user, statusCode, request, response) {
     ),
     secure:
       process.env.NODE_ENV === "production" &&
-      (request.secure || request.headers("x-forwarded-proto")),
+      (request.secure || request.get("x-forwarded-proto") === "https"),
     httpOnly: true,
   };
   response.cookie("jwt", token, cookieOptions);
