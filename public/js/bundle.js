@@ -28,8 +28,8 @@
   // node_modules/mapbox-gl/dist/mapbox-gl.js
   var require_mapbox_gl = __commonJS({
     "node_modules/mapbox-gl/dist/mapbox-gl.js"(exports, module) {
-      (function(global2, factory) {
-        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory() : typeof define === "function" && define.amd ? define(factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, global2.mapboxgl = factory());
+      (function(global2, factory2) {
+        typeof exports === "object" && typeof module !== "undefined" ? module.exports = factory2() : typeof define === "function" && define.amd ? define(factory2) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, global2.mapboxgl = factory2());
       })(exports, function() {
         "use strict";
         var shared, worker, mapboxgl2;
@@ -24565,7 +24565,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   } = axios_default;
 
   // public/js/alerts.js
-  function showAlert(type, message, time = 5) {
+  function showAlert2(type, message, time = 5) {
     hideAlert();
     const markup = `<div class="alert alert--${type}">${message}</div>`;
     document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
@@ -24577,7 +24577,25 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       alert.remove();
   }
 
-  // public/js/log.js
+  // public/js/factory.js
+  function factory(method, url, successFunction, errorFunction) {
+    return async function(data) {
+      try {
+        const response = await axios_default({
+          method,
+          url,
+          data
+        });
+        if (response.data.status === "success") {
+          successFunction(data);
+        }
+      } catch (error) {
+        errorFunction(error);
+      }
+    };
+  }
+
+  // public/js/auth.js
   async function login(email, password) {
     try {
       const response = await axios_default({
@@ -24589,13 +24607,13 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         }
       });
       if (response.data.status === "success") {
-        showAlert("success", "Logged in successfully!");
+        showAlert2("success", "Logged in successfully!");
         window.setTimeout(() => {
           location.assign("/");
         }, 1500);
       }
     } catch (error) {
-      showAlert("error", error.response.data.message);
+      showAlert2("error", error.response.data.message);
     }
   }
   async function logout() {
@@ -24608,23 +24626,15 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         location.reload(true);
       }
     } catch (error) {
-      showAlert("error", "Error logging out! Try again.");
+      showAlert2("error", "Error logging out! Try again.");
     }
   }
-  async function forgot(data) {
-    try {
-      const response = await axios_default({
-        method: "POST",
-        url: "/api/v1/users/forgotPassword",
-        data
-      });
-      if (response.data.status === "success") {
-        showAlert("success", `Sent email to ${data.email}!`);
-      }
-    } catch (error) {
-      showAlert("error", error.response.data.message);
-    }
-  }
+  var forgot = factory(
+    "POST",
+    "/api/v1/users/forgotPassword",
+    (data) => showAlert2("success", `Sent email to ${data.email}!`),
+    (error) => showAlert2("error", error.response.data.message)
+  );
   async function signup(data) {
     try {
       const response = await axios_default({
@@ -24633,12 +24643,12 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         data
       });
       if (response.data.status === "success") {
-        showAlert("success", `Welcome!`);
+        showAlert2("success", `Welcome!`);
         window.setTimeout(() => location.assign("/me"), 1500);
         return true;
       }
     } catch (error) {
-      showAlert("error", error.response.data.message);
+      showAlert2("error", error.response.data.message);
       return false;
     }
   }
@@ -24663,7 +24673,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         data
       });
       if (response.data.status === "success") {
-        showAlert("success", `${type} succeeded`);
+        showAlert2("success", `${type} succeeded`);
         if (data instanceof FormData && data.has("photo")) {
           window.setTimeout(() => {
             location.reload(true);
@@ -24675,11 +24685,11 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         }
         return true;
       } else {
-        showAlert("error", "Something went wrong. Please contact support.");
+        showAlert2("error", "Something went wrong. Please contact support.");
         return false;
       }
     } catch (error) {
-      showAlert("error", error.response.data.message);
+      showAlert2("error", error.response.data.message);
     }
   }
   function imageURLPreview(upload2, newPreview, newPreviewLabel) {
@@ -24703,7 +24713,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         sessionId: checkoutSession.data.session.id
       });
     } catch (error) {
-      showAlert("error", error);
+      showAlert2("error", error);
     }
   }
 
@@ -24842,7 +24852,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     });
   }
   if (alertMessage) {
-    showAlert("success", alertMessage, 15);
+    showAlert2("success", alertMessage, 15);
   }
 })();
 /*! Bundled license information:

@@ -1,5 +1,5 @@
 import displayMap from "./mapbox";
-import login, { forgot, logout, signup } from "./log";
+import { login, forgot, logout, signup } from "./auth";
 import { updateSettings, imageURLPreview } from "./updateSettings";
 import bookTour from "./stripe";
 import showAlert from "./alerts";
