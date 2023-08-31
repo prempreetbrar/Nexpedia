@@ -18,7 +18,7 @@ exports.alertHandler = (request, response, next) => {
 exports.getOverview = catchAsync(async (request, response) => {
   const tours = await Tour.find();
 
-  factory.view("overview", {
+  factory.view("./tours/overview", {
     title: "All Tours",
     tours,
   })(request, response);
@@ -36,7 +36,7 @@ exports.getMyTours = catchAsync(async (request, response) => {
     throw new AppError("You have not booked any tours.", 404);
   }
 
-  factory.view("overview", {
+  factory.view("./tours/overview", {
     title: "My Bookings",
     tours,
   })(request, response);
@@ -50,7 +50,10 @@ exports.getTour = catchAsync(async (request, response) => {
 
   if (!tour) throw new AppError("There is no tour with that name.", 404);
 
-  factory.view("tour", { title: `${tour.name} Tour`, tour })(request, response);
+  factory.view("./tours/tour", { title: `${tour.name} Tour`, tour })(
+    request,
+    response
+  );
 });
 
 exports.getSignup = factory.view("./auth/signup", { title: "Sign up" });

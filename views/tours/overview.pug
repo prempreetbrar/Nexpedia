@@ -1,8 +1,8 @@
-extends base
+extends ../base
 
 block content 
     main.main
         h1.heading-primary.purple= title
         .card-container
             each tour in tours 
-                include overviewTourCard
+                include _overviewTourCard
