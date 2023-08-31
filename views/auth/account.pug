@@ -1,0 +1,88 @@
+extends ../base
+
+include _form
+
+mixin navItem(link, text, icon, active)
+    li(class=`${active ? "side-nav--active" : ""}`)
+        a(href=`${link}`)
+            svg
+                use(xlink:href=`img/icons.svg#icon-${icon}`)
+            | #{text}
+
+block content
+    main.main 
+        .user-view
+            nav.user-view__menu
+                ul.side-nav
+                    +navItem("#", "Settings", "settings", true)
+                    +navItem("/me/bookings", "My bookings", "briefcase", false)
+                    +navItem("#", "My reviews", "star", false)
+                    +navItem("#", "Billing", "credit-card", false)
+
+                - if (user.role === "admin")
+                    .admin-nav
+                        h5.admin-nav__heading Admin
+                        ul.side-nav
+                            +navItem("#", "Manage tours", "map", false)
+                            +navItem("#", "Manage users", "users", false)
+                            +navItem("#", "Manage reviews", "star", false)
+                            +navItem("#", "Manage bookings", "briefcase", false)
+
+            .user-view__content
+                .user-view__form-container
+                  - 
+                    const items = [
+                        {
+                          inputId: "name",
+                          inputType: "name",
+                          value: user.name,
+                          label: "Name"
+                        },
+                        {
+                          inputId: "email",
+                          inputType: "email",
+                          itemStyle: "ma-bt-md",
+                          label: "Email address",
+                          value: user.email
+                        },                        
+                        {
+                          url: user.photo,
+                          altText: "User photo",
+                          imageId: "photo",
+                          imageName: "photo",
+                          imageLabel: "Upload new photo",
+                          isPhoto: true
+                        },
+                    ];
+                  +form("Your account settings", "ma-bt-md", "form-user-data", items, null, "Save settings", "btn--small", true)
+                .line &nbsp;
+                .user-view__form-container
+                  - 
+                    const passwordItems = [
+                        {
+                          inputId: "password-current",
+                          inputType: "password",
+                          placeholder: "••••••••",
+                          value: "",
+                          label: "Current password",
+                          inputMinLength: "8"
+                        },
+                        {
+                          inputId: "password",
+                          inputType: "password",
+                          placeholder: "••••••••",
+                          value: "",
+                          label: "New password",
+                          inputMinLength: "8"
+                        },
+                        {
+                          inputId: "password-confirm",
+                          inputType: "password",
+                          placeholder: "••••••••",
+                          value: "",
+                          label: "Confirm password",
+                          itemStyle: "ma-bt-lg",
+                          inputMinLength: "8"
+                        },
+                    ];
+                  +form("Password change", "ma-bt-md", "form-user-password", passwordItems, "save-password", "Save password", "btn--small", true)

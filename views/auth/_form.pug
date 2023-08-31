@@ -1,11 +1,24 @@
-mixin formItem(itemStyle, inputId, inputType, inputMinLength, placeholder, label)
+mixin photoItem(url, altText, imageId, imageName, imageLabel)
+  .form__group.form__photo-upload
+      img.form__user-photo(src=`img/users/${url}`, alt=`${altText}`)
+      input.form__upload(type="file", accept="image/*", id=`${imageId}`, name=`${imageName}`)
+      label(for=`${imageId}`)= imageLabel
+
+mixin formItem(itemStyle, inputId, inputType, inputMinLength, placeholder, label, value)
   .form__group(class=`${itemStyle}`)
     label.form__label(for=`${inputId}`)= label
-    input.form__input(id=`${inputId}`, type=`${inputType}`, minlength=`${inputMinLength}` placeholder=`${placeholder}`, required)
+    input.form__input(id=`${inputId}`, type=`${inputType}`, minlength=`${inputMinLength}` placeholder=`${placeholder}`, value=`${value}`, required)
 
-mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel)
+mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel, buttonStyle, buttonRight)
   h2.heading-secondary(class=`${headingClass}`)= heading
   form.form(class=`${formClass}`)
     each item in formItems 
-      +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label)
-    button.btn.btn--green(id=`${buttonId}`)= buttonLabel
+      if item.isPhoto
+        +photoItem(item.url, item.altText, item.imageId, item.imageName, item.imageLabel)
+      else
+        +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label, item.value)
+    if buttonRight 
+      .form__group.right 
+        button.btn.btn--green(id=`${buttonId}`, class=`${buttonStyle}`)= buttonLabel
+    else 
+      button.btn.btn--green(id=`${buttonId}`, class=`${buttonStyle}`)= buttonLabel
