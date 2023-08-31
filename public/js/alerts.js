@@ -1,9 +1,9 @@
-export default function showAlert(type, message) {
+export default function showAlert(type, message, time = 5) {
   hideAlert();
   const markup = `<div class="alert alert--${type}">${message}</div>`;
   document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
 
-  setTimeout(hideAlert, 5000);
+  setTimeout(hideAlert, time * 1000);
 }
 
 export function hideAlert() {

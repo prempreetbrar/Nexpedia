@@ -24565,16 +24565,16 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   } = axios_default;
 
   // public/js/alerts.js
-  function showAlert(type, message) {
+  function showAlert(type, message, time = 5) {
     hideAlert();
     const markup = `<div class="alert alert--${type}">${message}</div>`;
     document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
-    setTimeout(hideAlert, 5e3);
+    setTimeout(hideAlert, time * 1e3);
   }
   function hideAlert() {
-    const alert = document.querySelector(".alert");
-    if (alert)
-      alert.remove();
+    const alert2 = document.querySelector(".alert");
+    if (alert2)
+      alert2.remove();
   }
 
   // public/js/log.js
@@ -24717,6 +24717,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var passwordForgotForm = document.querySelector(".form-user-password-forgot");
   var logoutButton = document.querySelector(".nav__el--logout");
   var bookButton = document.getElementById("book-tour");
+  var alertMessage = document.querySelector("body").dataset.alert;
   var upload = document.querySelector("#photo");
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -24839,6 +24840,9 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       const { tourId } = e.target.dataset;
       await bookTour(tourId);
     });
+  }
+  if (alert) {
+    showAlert("success", alertMessage, 15);
   }
 })();
 /*! Bundled license information:

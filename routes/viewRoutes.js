@@ -8,11 +8,13 @@ const {
   getForgotPassword,
   getMyTours,
   getSignup,
+  alertHandler,
 } = require("../controllers/viewController");
 const { isLoggedIn, protect } = require("../controllers/authController");
 
 const router = express.Router();
 
+router.use(alertHandler);
 router.get("/me", protect, getAccount);
 router.get("/me/bookings", protect, getMyTours);
 router.use(isLoggedIn);

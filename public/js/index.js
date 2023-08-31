@@ -2,6 +2,7 @@ import displayMap from "./mapbox";
 import login, { forgot, logout, signup } from "./log";
 import { updateSettings, imageURLPreview } from "./updateSettings";
 import bookTour from "./stripe";
+import showAlert from "./alerts";
 
 const mapBox = document.getElementById("map");
 const signupForm = document.querySelector(".signUp--form");
@@ -12,6 +13,7 @@ const passwordResetForm = document.querySelector(".form-user-password-reset");
 const passwordForgotForm = document.querySelector(".form-user-password-forgot");
 const logoutButton = document.querySelector(".nav__el--logout");
 const bookButton = document.getElementById("book-tour");
+const alertMessage = document.querySelector("body").dataset.alert;
 
 const upload = document.querySelector("#photo");
 
@@ -158,4 +160,8 @@ if (bookButton) {
     const { tourId } = e.target.dataset;
     await bookTour(tourId);
   });
+}
+
+if (alertMessage) {
+  showAlert("success", alertMessage, 15);
 }
