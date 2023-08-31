@@ -1,3 +1,7 @@
+mixin labelItem(id, label)
+  .form__group
+    label.form__label(for=`${id}`)= label
+
 mixin footnoteItem(url, label)
   .form__group.right 
     a.footlink(href=`${url}`)= label
@@ -21,10 +25,9 @@ mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel, b
         +photoItem(item.url, item.altText, item.imageId, item.imageName, item.imageLabel)
       else if item.isFootnote
         +footnoteItem(item.url, item.label)
+      else if item.isLabel 
+        +labelItem(item.inputId, item.label)
       else
         +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label, item.value)
-    if buttonRight 
-      .form__group.right 
-        button.btn.btn--green(id=`${buttonId}`, class=`${buttonStyle}`)= buttonLabel
-    else 
+    .form__group(class=`${buttonRight ? ".right" : ""}`)
       button.btn.btn--green(id=`${buttonId}`, class=`${buttonStyle}`)= buttonLabel

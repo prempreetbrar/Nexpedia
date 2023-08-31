@@ -59,6 +59,6 @@ exports.getAccount = factory.view("./auth/account", { title: "Your account" });
 exports.getResetPassword = factory.view("resetPassword", {
   title: "Reset your password",
 });
-exports.getForgotPassword = factory.view("forgotPassword", {
+exports.getForgotPassword = factory.view("./auth/forgotPassword", {
   title: "Forgot your password?",
 });
