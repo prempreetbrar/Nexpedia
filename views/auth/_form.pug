@@ -1,6 +1,8 @@
-mixin labelItem(id, label)
+mixin labelItem(id, label, specialText)
   .form__group
     label.form__label(for=`${id}`)= label
+      if specialText 
+        span.special= specialText
 
 mixin footnoteItem(url, label)
   .form__group.right 
@@ -26,7 +28,7 @@ mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel, b
       else if item.isFootnote
         +footnoteItem(item.url, item.label)
       else if item.isLabel 
-        +labelItem(item.inputId, item.label)
+        +labelItem(item.inputId, item.label, item.specialText)
       else
         +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label, item.value)
     .form__group(class=`${buttonRight ? ".right" : ""}`)

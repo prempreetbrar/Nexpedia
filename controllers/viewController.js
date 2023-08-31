@@ -56,7 +56,7 @@ exports.getTour = catchAsync(async (request, response) => {
 exports.getSignup = factory.view("./auth/signup", { title: "Sign up" });
 exports.getLogin = factory.view("./auth/login", { title: "Login" });
 exports.getAccount = factory.view("./auth/account", { title: "Your account" });
-exports.getResetPassword = factory.view("resetPassword", {
+exports.getResetPassword = factory.view("./auth/resetPassword", {
   title: "Reset your password",
 });
 exports.getForgotPassword = factory.view("./auth/forgotPassword", {
