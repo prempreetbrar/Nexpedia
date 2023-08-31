@@ -1,0 +1,38 @@
+extends ../base
+
+include _form
+
+block content
+    main.main
+        .login-form
+          - 
+            const items = [{
+                  inputId: "name",
+                  inputType: "name",
+                  placeholder: "First Last",
+                  label: "Name"
+                },
+                {
+                  inputId: "email",
+                  inputType: "email",
+                  placeholder: "you@example.com",
+                  label: "Email address"
+                },
+                {
+                  inputId: "password",
+                  inputType: "password",
+                  placeholder: "••••••••",
+                  label: "Password",
+                  inputMinLength: "8"
+                },
+                {
+                  inputId: "password-confirm",
+                  inputType: "password",
+                  placeholder: "••••••••",
+                  label: "Confirm password",
+                  itemStyle: "ma-bt-lg",
+                  inputMinLength: "8"
+                },
+            ];
+          +form("Create your account", "ma-bt-lg", "signUp--form", items, "signup", "create")
+                

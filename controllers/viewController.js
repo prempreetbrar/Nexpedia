@@ -53,7 +53,7 @@ exports.getTour = catchAsync(async (request, response) => {
   factory.view("tour", { title: `${tour.name} Tour`, tour })(request, response);
 });
 
-exports.getSignup = factory.view("signup", { title: "Sign up" });
+exports.getSignup = factory.view("./auth/signup", { title: "Sign up" });
 exports.getLogin = factory.view("login", { title: "Login" });
 exports.getAccount = factory.view("account", { title: "Your account" });
 exports.getResetPassword = factory.view("resetPassword", {

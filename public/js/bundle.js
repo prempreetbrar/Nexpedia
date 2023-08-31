@@ -24572,9 +24572,9 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     setTimeout(hideAlert, time * 1e3);
   }
   function hideAlert() {
-    const alert2 = document.querySelector(".alert");
-    if (alert2)
-      alert2.remove();
+    const alert = document.querySelector(".alert");
+    if (alert)
+      alert.remove();
   }
 
   // public/js/log.js
@@ -24841,7 +24841,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       await bookTour(tourId);
     });
   }
-  if (alert) {
+  if (alertMessage) {
     showAlert("success", alertMessage, 15);
   }
 })();

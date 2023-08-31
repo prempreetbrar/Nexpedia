@@ -1,0 +1,11 @@
+mixin formItem(itemStyle, inputId, inputType, inputMinLength, placeholder, label)
+  .form__group(class=`${itemStyle}`)
+    label.form__label(for=`${inputId}`)= label
+    input.form__input(id=`${inputId}`, type=`${inputType}`, minlength=`${inputMinLength}` placeholder=`${placeholder}`, required)
+
+mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel)
+  h2.heading-secondary(class=`${headingClass}`)= heading
+  form.form(class=`${formClass}`)
+    each item in formItems 
+      +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label)
+    button.btn.btn--green(id=`${buttonId}`)= buttonLabel
