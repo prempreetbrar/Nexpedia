@@ -1,3 +1,7 @@
+mixin footnoteItem(url, label)
+  .form__group.right 
+    a.footlink(href=`${url}`)= label
+
 mixin photoItem(url, altText, imageId, imageName, imageLabel)
   .form__group.form__photo-upload
       img.form__user-photo(src=`img/users/${url}`, alt=`${altText}`)
@@ -15,6 +19,8 @@ mixin form(heading, headingClass, formClass, formItems, buttonId, buttonLabel, b
     each item in formItems 
       if item.isPhoto
         +photoItem(item.url, item.altText, item.imageId, item.imageName, item.imageLabel)
+      else if item.isFootnote
+        +footnoteItem(item.url, item.label)
       else
         +formItem(item.itemStyle, item.inputId, item.inputType, item.inputMinLength, item.placeholder, item.label, item.value)
     if buttonRight 

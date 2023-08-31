@@ -1,0 +1,36 @@
+extends ../base
+
+include _form
+
+block content
+    main.main
+        .login-form
+            - 
+              const items = [
+                {
+                  inputId: "email",
+                  inputType: "email",
+                  placeholder: "you@example.com",
+                  value: "",
+                  label: "Email address"
+                },
+                {
+                  inputId: "password",
+                  inputType: "password",
+                  placeholder: "••••••••",
+                  value: "",
+                  label: "Password",
+                  itemStyle: "ma-bt-md",
+                  inputMinLength: "8"
+                },
+                {
+                  url: "/forgotPassword",
+                  label: "Forgot your password?",
+                  isFootnote: true
+                },
+              ];
+            +form("Log into your account", "ma-bt-lg", "login--form", items, null, "Login")
+            .line &nbsp;
+            h2 Don't have an account?
+              | 
+              a.footlink(href="/signup") Sign up here
