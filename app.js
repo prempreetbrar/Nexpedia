@@ -18,6 +18,7 @@ const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
+const { transactionComplete } = require("./controllers/bookingController");
 
 const app = express();
 app.enable("trust proxy");
@@ -86,6 +87,12 @@ app.use(
   })
 );
 app.use("/api", limiter);
+app.post(
+  "/transaction-complete",
+  express.raw({ type: "application/json" }),
+  transactionComplete
+);
+
 app.use(express.json({ limit: "50kb" }));
 app.use(cookieParser());
 
