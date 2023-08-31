@@ -1,40 +1,41 @@
 const sharp = require("sharp");
 const User = require("../models/userModel");
 const factory = require("./controllerFactory");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+const errorHandling = require("../utils/errorHandling");
 const upload = require("../utils/multer");
 
 exports.uploadMyPhoto = upload.single("photo");
-exports.resizeMyPhoto = catchAsync(async (request, response, next) => {
-  if (!request.file) {
-    return next();
+exports.resizeMyPhoto = errorHandling.catchAsync(
+  async (request, response, next) => {
+    if (!request.file) {
+      return next();
+    }
+
+    const fileName = `user-${request.user.id}.jpeg`;
+    request.file.filename = fileName;
+
+    await sharp(request.file.buffer)
+      .resize(500, 500)
+      .toFormat("jpeg")
+      .jpeg({ quality: 90 })
+      .toFile(`public/img/users/${request.file.filename}`);
+
+    next();
   }
-
-  const fileName = `user-${request.user.id}.jpeg`;
-  request.file.filename = fileName;
-
-  await sharp(request.file.buffer)
-    .resize(500, 500)
-    .toFormat("jpeg")
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${request.file.filename}`);
-
-  next();
-});
+);
 
 exports.setUserId = (request, response, next) => {
   request.params.id = request.user.id;
   next();
 };
 
-exports.updateMe = catchAsync(async (request, response) => {
+exports.updateMe = errorHandling.catchAsync(async (request, response) => {
   if (
     "currentPassword" in request.body ||
     "password" in request.body ||
     "passwordConfirm" in request.body
   )
-    throw new AppError(
+    throw new errorHandling.AppError(
       "This route is NOT for password changes. Please use /changePassword."
     );
 
@@ -62,7 +63,7 @@ exports.updateMe = catchAsync(async (request, response) => {
   });
 });
 
-exports.deleteMe = catchAsync(async (request, response) => {
+exports.deleteMe = errorHandling.catchAsync(async (request, response) => {
   await User.findByIdAndUpdate(request.user.id, { active: false });
 
   response.status(204).json({

@@ -1,8 +1,7 @@
 const factory = require("./controllerFactory");
 
 const Tour = require("../models/tourModel");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+const errorHandling = require("../utils/errorHandling");
 const Booking = require("../models/bookingModel");
 
 exports.alertHandler = (request, response, next) => {
@@ -15,7 +14,7 @@ exports.alertHandler = (request, response, next) => {
   next();
 };
 
-exports.getOverview = catchAsync(async (request, response) => {
+exports.getOverview = errorHandling.catchAsync(async (request, response) => {
   const tours = await Tour.find();
 
   factory.view("./tours/overview", {
@@ -24,7 +23,7 @@ exports.getOverview = catchAsync(async (request, response) => {
   })(request, response);
 });
 
-exports.getMyTours = catchAsync(async (request, response) => {
+exports.getMyTours = errorHandling.catchAsync(async (request, response) => {
   // 1) find all bookings
   const myBookings = await Booking.find({ user: request.user.id }).select(
     "tour"
@@ -33,7 +32,7 @@ exports.getMyTours = catchAsync(async (request, response) => {
   // 2) get tours connected to bookings
   const tours = myBookings.map((booking) => booking.tour);
   if (tours.length === 0) {
-    throw new AppError("You have not booked any tours.", 404);
+    throw new errorHandling.AppError("You have not booked any tours.", 404);
   }
 
   factory.view("./tours/overview", {
@@ -42,13 +41,14 @@ exports.getMyTours = catchAsync(async (request, response) => {
   })(request, response);
 });
 
-exports.getTour = catchAsync(async (request, response) => {
+exports.getTour = errorHandling.catchAsync(async (request, response) => {
   const tour = await Tour.findOne({ slug: request.params.slug }).populate({
     path: "reviews",
     fields: "review rating user",
   });
 
-  if (!tour) throw new AppError("There is no tour with that name.", 404);
+  if (!tour)
+    throw new errorHandling.AppError("There is no tour with that name.", 404);
 
   factory.view("./tours/tour", { title: `${tour.name} Tour`, tour })(
     request,

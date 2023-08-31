@@ -1,4 +1,5 @@
 const multer = require("multer");
+const errorHandling = require("./errorHandling");
 
 const multerStorage = multer.memoryStorage();
 const multerFilter = (request, file, callback) => {
@@ -6,7 +7,10 @@ const multerFilter = (request, file, callback) => {
     callback(null, true);
   } else {
     callback(
-      new AppError("Not an image! Please upload only images.", 400),
+      new errorHandling.AppError(
+        "Not an image! Please upload only images.",
+        400
+      ),
       false
     );
   }

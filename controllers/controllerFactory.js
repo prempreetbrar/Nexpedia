@@ -1,9 +1,8 @@
 const APIFeatures = require("../utils/apiFeatures");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+const errorHandling = require("../utils/errorHandling");
 
 exports.createOne = (Model) => {
-  return catchAsync(async (request, response) => {
+  return errorHandling.catchAsync(async (request, response) => {
     const document = await Model.create(request.body);
     response.status(201).json({
       status: "success",
@@ -15,7 +14,7 @@ exports.createOne = (Model) => {
 };
 
 exports.getAll = (Model) => {
-  return catchAsync(async (request, response) => {
+  return errorHandling.catchAsync(async (request, response) => {
     const cleanedQuery = new APIFeatures(
       request.query,
       Model.find(request.body.filter || {})
@@ -38,13 +37,13 @@ exports.getAll = (Model) => {
 };
 
 exports.getOne = (Model, populateOptions) => {
-  return catchAsync(async (request, response) => {
+  return errorHandling.catchAsync(async (request, response) => {
     let query = Model.findById(request.params.id);
     if (populateOptions) query = query.populate(populateOptions);
 
     const document = await query;
     if (!document)
-      throw new AppError(
+      throw new errorHandling.AppError(
         `No ${Model.modelName} found with ID ${request.params.id}`,
         404
       );
@@ -59,7 +58,7 @@ exports.getOne = (Model, populateOptions) => {
 };
 
 exports.updateOne = (Model) => {
-  return catchAsync(async (request, response) => {
+  return errorHandling.catchAsync(async (request, response) => {
     const document = await Model.findByIdAndUpdate(
       request.params.id,
       request.body,
@@ -70,7 +69,7 @@ exports.updateOne = (Model) => {
     );
 
     if (!document)
-      throw new AppError(
+      throw new errorHandling.AppError(
         `No ${Model.modelName} found with ID ${request.params.id}`,
         404
       );
@@ -85,10 +84,10 @@ exports.updateOne = (Model) => {
 };
 
 exports.deleteOne = (Model) => {
-  return catchAsync(async (request, response) => {
+  return errorHandling.catchAsync(async (request, response) => {
     const document = await Model.findByIdAndDelete(request.params.id);
     if (!document)
-      throw new AppError(
+      throw new errorHandling.AppError(
         `No ${Model.modelName} found with ID ${request.params.id}`,
         404
       );

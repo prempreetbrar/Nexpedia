@@ -20,7 +20,7 @@ const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 const bookingRouter = require("./routes/bookingRoutes");
 
-const AppError = require("./utils/appError");
+const errorHandling = require("./utils/errorHandling");
 const errorController = require("./controllers/errorController");
 
 exports.security = (app) => {
@@ -153,7 +153,9 @@ exports.routes = (app) => {
 exports.errors = (app) => {
   app.all("*", (request, response, next) => {
     next(
-      new AppError(`Cannot find ${request.originalUrl} on the server!`),
+      new errorHandling.AppError(
+        `Cannot find ${request.originalUrl} on the server!`
+      ),
       404
     );
   });

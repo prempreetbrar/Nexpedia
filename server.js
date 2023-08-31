@@ -1,6 +1,6 @@
 // we need this to be at the top so we can deal with EVERY unhandledException
-const handleUncaught = require("./utils/handleUncaught");
-handleUncaught("unhandledException");
+const errorHandling = require("./utils/errorHandling");
+errorHandling.handleUncaught("unhandledException");
 
 const dotenv = require("dotenv");
 const ENV = `${__dirname}/config.env`;
@@ -23,7 +23,7 @@ const server = app.listen(PORT, () => {
   console.log(`App running on port ${PORT}...`);
 });
 
-handleUncaught("unhandledRejection", server);
+errorHandling.handleUncaught("unhandledRejection", server);
 
 process.on("SIGTERM", () => {
   console.log("SIGTERM RECEIVED; shutting down gracefully.");

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const AppError = require("../utils/appError");
+const errorHandling = require("../utils/errorHandling");
 const DUPLICATE = 11000;
 
 module.exports = (error, request, response, next) => {
@@ -30,14 +30,14 @@ module.exports = (error, request, response, next) => {
 
 function handleDBCastError(error) {
   const message = `Invalid ${error.path}: ${error.value}`;
-  return new AppError(message, 400);
+  return new errorHandling.AppError(message, 400);
 }
 
 function handleDBDuplicateError(error) {
   const message = `DUPLICATE FIELD. ${Object.keys(error.keyValue)[0]}: ${
     Object.values(error.keyValue)[0]
   }. Please use another ${Object.keys(error.keyValue)[0]}.`;
-  return new AppError(message, 404);
+  return new errorHandling.AppError(message, 404);
 }
 
 function handleDBValidationError(error) {
@@ -59,15 +59,18 @@ function handleDBValidationError(error) {
   }
 
   const message = messages.join(" ");
-  return new AppError(message, 400);
+  return new errorHandling.AppError(message, 400);
 }
 
 function handleJSONWebTokenError() {
-  return new AppError("Invalid token. Please log in again!", 401);
+  return new errorHandling.AppError("Invalid token. Please log in again!", 401);
 }
 
 function handleJSONTokenExpiredError() {
-  return new AppError("Your token has expired. Please log in again!", 401);
+  return new errorHandling.AppError(
+    "Your token has expired. Please log in again!",
+    401
+  );
 }
 
 function sendErrorDev(error, request, response) {
