@@ -99,3 +99,13 @@ exports.deleteOne = (Model) => {
     });
   });
 };
+
+exports.view = (templateName, variables) => {
+  return (request, response) => {
+    response.status(200).render(templateName, {
+      ...variables,
+      resetToken: request.params.resetToken || "",
+      email: request.params.email || "",
+    });
+  };
+};

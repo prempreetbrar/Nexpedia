@@ -1,3 +1,5 @@
+const factory = require("./controllerFactory");
+
 const Tour = require("../models/tourModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -16,17 +18,11 @@ exports.alertHandler = (request, response, next) => {
 exports.getOverview = catchAsync(async (request, response) => {
   const tours = await Tour.find();
 
-  response.status(200).render("overview", {
+  factory.view("overview", {
     title: "All Tours",
     tours,
-  });
+  })(request, response);
 });
-
-exports.getAccount = (request, response) => {
-  response.status(200).render("account", {
-    title: "Your account",
-  });
-};
 
 exports.getMyTours = catchAsync(async (request, response) => {
   // 1) find all bookings
@@ -39,37 +35,12 @@ exports.getMyTours = catchAsync(async (request, response) => {
   if (tours.length === 0) {
     throw new AppError("You have not booked any tours.", 404);
   }
-  response.status(200).render("overview", {
+
+  factory.view("overview", {
     title: "My Bookings",
     tours,
-  });
+  })(request, response);
 });
-
-exports.getSignup = (request, response) => {
-  response.status(200).render("signup", {
-    title: "Sign up",
-  });
-};
-
-exports.getLogin = (request, response) => {
-  response.status(200).render("login", {
-    title: "Login",
-  });
-};
-
-exports.getResetPassword = (request, response) => {
-  response.status(200).render("resetPassword", {
-    title: "Reset your password",
-    resetToken: request.params.resetToken,
-    email: request.params.email,
-  });
-};
-
-exports.getForgotPassword = (request, response) => {
-  response.status(200).render("forgotPassword", {
-    title: "Forgot your password?",
-  });
-};
 
 exports.getTour = catchAsync(async (request, response) => {
   const tour = await Tour.findOne({ slug: request.params.slug }).populate({
@@ -79,8 +50,15 @@ exports.getTour = catchAsync(async (request, response) => {
 
   if (!tour) throw new AppError("There is no tour with that name.", 404);
 
-  response.status(200).render("tour", {
-    title: `${tour.name} Tour`,
-    tour,
-  });
+  factory.view("tour", { title: `${tour.name} Tour`, tour })(request, response);
+});
+
+exports.getSignup = factory.view("signup", { title: "Sign up" });
+exports.getLogin = factory.view("login", { title: "Login" });
+exports.getAccount = factory.view("account", { title: "Your account" });
+exports.getResetPassword = factory.view("resetPassword", {
+  title: "Reset your password",
+});
+exports.getForgotPassword = factory.view("forgotPassword", {
+  title: "Forgot your password?",
 });
