@@ -24717,10 +24717,10 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       }
     }
   }
-  async function buttonUpdate(buttonId, tempText, originalText, handler, data) {
+  async function buttonUpdate(buttonId, tempText, originalText, handler, ...data) {
     const button = document.getElementById(buttonId);
     button.textContent = tempText;
-    const didSucceed = await handler(data);
+    const didSucceed = await handler(...data);
     button.textContent = originalText;
     return didSucceed;
   }

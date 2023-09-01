@@ -24,10 +24,16 @@ function clear(didSucceed, ...DOMIds) {
   }
 }
 
-async function buttonUpdate(buttonId, tempText, originalText, handler, data) {
+async function buttonUpdate(
+  buttonId,
+  tempText,
+  originalText,
+  handler,
+  ...data
+) {
   const button = document.getElementById(buttonId);
   button.textContent = tempText;
-  const didSucceed = await handler(data);
+  const didSucceed = await handler(...data);
   button.textContent = originalText;
 
   return didSucceed;
