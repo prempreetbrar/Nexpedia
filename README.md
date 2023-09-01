@@ -3,13 +3,13 @@
 A "nature-based" clone of Expedia. Works correctly ONLY on larger screen sizes. **Click [*here*](https://nexpedia.prempreetbrar.me) to 
 try it out!** Or, watch a quick gif of me interacting with it below:
 
-Signing Up, Updating User Info
+## Signing Up, Updating User Info:
 ![](gifs/auth.gif)
 
-Changing Password, Resetting Password
+## Changing Password, Resetting Password:
 ![](gifs/password.gif)
 
-Viewing Tour, Booking Tour
+## Viewing Tour, Booking Tour:
 ![](gifs/tours.gif)
 
 &nbsp;
