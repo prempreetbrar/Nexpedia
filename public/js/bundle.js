@@ -22444,7 +22444,8 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         anchor: "bottom"
       }).setLngLat(location2.coordinates).addTo(map);
       new import_mapbox_gl.default.Popup({
-        offset: 30
+        offset: 30,
+        focusAfterOpen: false
       }).setLngLat(location2.coordinates).setHTML(`<p>Day ${location2.day}: ${location2.description}</p>`).addTo(map);
       bounds.extend(location2.coordinates);
     });

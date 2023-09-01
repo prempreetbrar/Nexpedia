@@ -26,6 +26,7 @@ export default function displayMap(locations) {
     // add popup
     new mapboxgl.Popup({
       offset: 30,
+      focusAfterOpen: false,
     })
       .setLngLat(location.coordinates)
       .setHTML(`<p>Day ${location.day}: ${location.description}</p>`)
