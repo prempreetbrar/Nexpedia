@@ -2,6 +2,7 @@
 
 A "nature-based" clone of Expedia. Works correctly ONLY on larger screen sizes. **Click [*here*](https://nexpedia.prempreetbrar.me) to 
 try it out!** Or, watch a quick gif of me interacting with it below:
+&nbsp;
 
 ## Features (Languages/Technologies Used: JavaScript, Node.js, Express, MongoDB, Mongoose, Pug.js)
 
@@ -22,6 +23,7 @@ try it out!** Or, watch a quick gif of me interacting with it below:
 - Stripe payments to book a tour; webhook endpoints are used to register booking with user
 - Deployment on Heroku, including a custom subdomain, HTTPs redirection, and automated certificate management for TLS
 - Performance: Uses npm compression to compress body sizes, permits CORS (Cross-Origin Resource Sharing) for simple and non-simple requests
+&nbsp;
 
 ## Limitations/Design Choices
 
@@ -29,6 +31,7 @@ try it out!** Or, watch a quick gif of me interacting with it below:
 - TypeScript was not used; I wanted to focus mainly on Node.js, Express, Mongoose, and MongoDB, without having to worry about type errors or styles (especially for code that I was writing temporarily or experimenting with). However, in the future, I would use TypeScript, as it would have saved me a bit of developer time by catching errors that I had to otherwise find myself.
 - I did not implement all API endpoints on the frontend; this was mainly due to time. I hope to come back in the future and implement more of them.
 - The Stripe purchase page is only for testing; I do not receive actual payments. This was because the main purpose of this was to learn, not to make money.
+&nbsp;
 
 ### If you want to start up the project on your local machine:
 
