@@ -22458,6 +22458,19 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     });
   }
 
+  // public/js/alerts.js
+  function showAlert(type, message, time = 5) {
+    hideAlert();
+    const markup = `<div class="alert alert--${type}">${message}</div>`;
+    document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
+    setTimeout(hideAlert, time * 1e3);
+  }
+  function hideAlert() {
+    const alert = document.querySelector(".alert");
+    if (alert)
+      alert.remove();
+  }
+
   // node_modules/axios/lib/helpers/bind.js
   function bind(fn, thisArg) {
     return function wrap() {
@@ -24564,22 +24577,9 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
     mergeConfig: mergeConfig2
   } = axios_default;
 
-  // public/js/alerts.js
-  function showAlert2(type, message, time = 5) {
-    hideAlert();
-    const markup = `<div class="alert alert--${type}">${message}</div>`;
-    document.querySelector("body").insertAdjacentHTML("afterbegin", markup);
-    setTimeout(hideAlert, time * 1e3);
-  }
-  function hideAlert() {
-    const alert = document.querySelector(".alert");
-    if (alert)
-      alert.remove();
-  }
-
   // public/js/factory.js
   function factory(method, url, successFunction, errorFunction) {
-    return async function(data) {
+    return async function(data = null) {
       try {
         const response = await axios_default({
           method,
@@ -24596,62 +24596,42 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   }
 
   // public/js/auth.js
-  async function login(email, password) {
-    try {
-      const response = await axios_default({
-        method: "POST",
-        url: `/api/v1/users/login`,
-        data: {
-          email,
-          password
-        }
-      });
-      if (response.data.status === "success") {
-        showAlert2("success", "Logged in successfully!");
-        window.setTimeout(() => {
-          location.assign("/");
-        }, 1500);
-      }
-    } catch (error) {
-      showAlert2("error", error.response.data.message);
+  var signup = factory(
+    "POST",
+    "/api/v1/users/signup",
+    (data) => {
+      showAlert("success", `Welcome!`);
+      window.setTimeout(() => location.assign("/me"), 1500);
+      return true;
+    },
+    (error) => {
+      showAlert("error", error.response.data.message);
+      return false;
     }
-  }
-  async function logout() {
-    try {
-      const response = await axios_default({
-        method: "GET",
-        url: "/api/v1/users/logout"
-      });
-      if (response.data.status === "success") {
-        location.reload(true);
-      }
-    } catch (error) {
-      showAlert2("error", "Error logging out! Try again.");
-    }
-  }
+  );
+  var login = factory(
+    "POST",
+    `/api/v1/users/login`,
+    (data) => {
+      showAlert("success", "Logged in successfully!");
+      window.setTimeout(() => {
+        location.assign("/");
+      }, 1500);
+    },
+    (error) => showAlert("error", error.response.data.message)
+  );
+  var logout = factory(
+    "GET",
+    "/api/v1/users/logout",
+    (data) => location.reload(true),
+    (error) => showAlert("error", "Error logging out! Try again.")
+  );
   var forgot = factory(
     "POST",
     "/api/v1/users/forgotPassword",
-    (data) => showAlert2("success", `Sent email to ${data.email}!`),
-    (error) => showAlert2("error", error.response.data.message)
+    (data) => showAlert("success", `Sent email to ${data.email}!`),
+    (error) => showAlert("error", error.response.data.message)
   );
-  async function signup(data) {
-    try {
-      const response = await axios_default({
-        method: "POST",
-        url: "/api/v1/users/signup",
-        data
-      });
-      if (response.data.status === "success") {
-        showAlert2("success", `Welcome!`);
-        window.setTimeout(() => location.assign("/me"), 1500);
-        return true;
-      }
-    } catch (error) {
-      showAlert2("error", error.response.data.message);
-      return false;
-    }
-  }
 
   // public/js/updateSettings.js
   async function updateSettings(data, type) {
@@ -24673,7 +24653,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         data
       });
       if (response.data.status === "success") {
-        showAlert2("success", `${type} succeeded`);
+        showAlert("success", `${type} succeeded`);
         if (data instanceof FormData && data.has("photo")) {
           window.setTimeout(() => {
             location.reload(true);
@@ -24685,11 +24665,11 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         }
         return true;
       } else {
-        showAlert2("error", "Something went wrong. Please contact support.");
+        showAlert("error", "Something went wrong. Please contact support.");
         return false;
       }
     } catch (error) {
-      showAlert2("error", error.response.data.message);
+      showAlert("error", error.response.data.message);
     }
   }
   function imageURLPreview(upload2, newPreview, newPreviewLabel) {
@@ -24713,7 +24693,7 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         sessionId: checkoutSession.data.session.id
       });
     } catch (error) {
-      showAlert2("error", error);
+      showAlert("error", error);
     }
   }
 
@@ -24729,47 +24709,23 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
   var bookButton = document.getElementById("book-tour");
   var alertMessage = document.querySelector("body").dataset.alert;
   var upload = document.querySelector("#photo");
+  function clear(didSucceed, ...DOMIds) {
+    if (didSucceed) {
+      for (const id of DOMIds) {
+        document.getElementById(id).value = "";
+      }
+    }
+  }
+  async function buttonUpdate(buttonId, tempText, originalText, handler, data) {
+    const button = document.getElementById(buttonId);
+    button.textContent = tempText;
+    const didSucceed = await handler(data);
+    button.textContent = originalText;
+    return didSucceed;
+  }
   if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
     displayMap(locations);
-  }
-  if (signupForm) {
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("password-confirm").value;
-      const signupButton = document.getElementById("signup");
-      signupButton.textContent = "Creating...";
-      const didSucceed = await signup({ name, email, password, confirmPassword });
-      signupButton.textContent = "Create";
-      if (didSucceed) {
-        document.getElementById("name").value = "";
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-        document.getElementById("password-confirm").value = "";
-      }
-    });
-  }
-  if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      login(email, password);
-    });
-  }
-  if (dataForm) {
-    dataForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const form = new FormData();
-      form.append("name", document.getElementById("name").value);
-      form.append("email", document.getElementById("email").value);
-      if (document.getElementById("photo").files.length > 0)
-        form.append("photo", document.getElementById("photo").files[0]);
-      updateSettings(form, "Update settings");
-    });
   }
   if (upload) {
     const originalPhoto = document.querySelector(".form__photo-upload");
@@ -24790,24 +24746,37 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
       }
     });
   }
+  if (signupForm) {
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("password-confirm").value;
+      const didSucceed = buttonUpdate("signup", "Creating...", "Create", signup, {
+        name,
+        email,
+        password,
+        confirmPassword
+      });
+      clear(didSucceed, "password", "password-confirm");
+    });
+  }
   if (passwordForm) {
     passwordForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const currentPassword = document.getElementById("password-current").value;
       const newPassword = document.getElementById("password").value;
       const confirmPassword = document.getElementById("password-confirm").value;
-      const saveButton = document.getElementById("save-password");
-      saveButton.textContent = "Updating...";
-      const didSucceed = await updateSettings(
+      const didSucceed = await buttonUpdate(
+        "save-password",
+        "Updating...",
+        "Save password",
+        updateSettings,
         { currentPassword, newPassword, confirmPassword },
         "Change password"
       );
-      saveButton.textContent = "Save password";
-      if (didSucceed) {
-        document.getElementById("password-current").value = "";
-        document.getElementById("password").value = "";
-        document.getElementById("password-confirm").value = "";
-      }
+      clear(didSucceed, "password-current", "password", "password-confirm");
     });
   }
   if (passwordResetForm) {
@@ -24818,41 +24787,62 @@ This leads to lower resolution of hillshade. For full hillshade resolution but h
         "password-confirm-reset"
       ).value;
       const token = document.querySelector(".hidden").dataset.token;
-      const resetButton = document.getElementById("password-reset-btn");
-      resetButton.textContent = "Updating...";
-      const didSucceed = await updateSettings(
+      const didSucceed = await buttonUpdate(
+        "password-reset-btn",
+        "Updating...",
+        "Reset password",
+        updateSettings,
         { newPassword, confirmPassword, token },
         "Reset password"
       );
-      resetButton.textContent = "Reset password";
-      if (didSucceed) {
-        document.getElementById("password-new-reset").value = "";
-        document.getElementById("password-confirm-reset").value = "";
-      }
+      clear(didSucceed, "password-new-reset", "password-confirm-reset");
     });
   }
   if (passwordForgotForm) {
     passwordForgotForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value;
-      const resetButton = document.getElementById("password-reset-btn");
-      resetButton.textContent = "Sending...";
-      await forgot({ email });
-      resetButton.textContent = "Continue";
+      buttonUpdate("password-reset-btn", "Sending...", "Continue", forgot, {
+        email
+      });
+    });
+  }
+  if (bookButton) {
+    bookButton.addEventListener("click", async (e) => {
+      const { tourId } = e.target.dataset;
+      buttonUpdate(
+        e.target.id,
+        "Processing...",
+        "Book Tour Now!",
+        bookTour,
+        tourId
+      );
+    });
+  }
+  if (loginForm) {
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      login({ email, password });
+    });
+  }
+  if (dataForm) {
+    dataForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const form = new FormData();
+      form.append("name", document.getElementById("name").value);
+      form.append("email", document.getElementById("email").value);
+      if (document.getElementById("photo").files.length > 0)
+        form.append("photo", document.getElementById("photo").files[0]);
+      updateSettings(form, "Update settings");
     });
   }
   if (logoutButton) {
     logoutButton.addEventListener("click", logout);
   }
-  if (bookButton) {
-    bookButton.addEventListener("click", async (e) => {
-      e.target.textContent = "Processing...";
-      const { tourId } = e.target.dataset;
-      await bookTour(tourId);
-    });
-  }
   if (alertMessage) {
-    showAlert2("success", alertMessage, 15);
+    showAlert("success", alertMessage, 15);
   }
 })();
 /*! Bundled license information:

@@ -2,7 +2,7 @@ import displayMap from "./mapbox";
 import { login, forgot, logout, signup } from "./auth";
 import { updateSettings, imageURLPreview } from "./updateSettings";
 import bookTour from "./stripe";
-import showAlert from "./alerts";
+import { showAlert } from "./alerts";
 
 const mapBox = document.getElementById("map");
 const signupForm = document.querySelector(".signUp--form");
@@ -134,20 +134,11 @@ if (passwordForgotForm) {
   });
 }
 
-async function buttonUpdate(buttonId, tempText, originalText, handler, data) {
-  const button = document.getElementById(buttonId);
-  button.textContent = tempText;
-  const didSucceed = await handler(data);
-  button.textContent = originalText;
-
-  return didSucceed;
-}
-
 if (bookButton) {
   bookButton.addEventListener("click", async (e) => {
     const { tourId } = e.target.dataset;
     buttonUpdate(
-      event.target.id,
+      e.target.id,
       "Processing...",
       "Book Tour Now!",
       bookTour,
