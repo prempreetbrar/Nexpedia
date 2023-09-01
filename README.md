@@ -2,6 +2,16 @@
 
 A "nature-based" clone of Expedia. Works correctly ONLY on larger screen sizes. **Click [*here*](https://nexpedia.prempreetbrar.me) to 
 try it out!** Or, watch a quick gif of me interacting with it below:
+
+Signing Up, Updating User Info
+![](gifs/auth.gif)
+
+Changing Password, Resetting Password
+![](gifs/password.gif)
+
+Viewing Tour, Booking Tour
+![](gifs/tours.gif)
+
 &nbsp;
 
 ## Features (Languages/Technologies Used: JavaScript, Node.js, Express, MongoDB, Mongoose, Pug.js)
