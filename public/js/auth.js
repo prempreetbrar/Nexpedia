@@ -30,7 +30,7 @@ export const login = factory(
 export const logout = factory(
   "GET",
   "/api/v1/users/logout",
-  (data) => location.reload(true),
+  (data) => location.assign("/"),
   (error) => showAlert("error", "Error logging out! Try again.")
 );
 
