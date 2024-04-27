@@ -41,7 +41,7 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "depcheck": "^1.4.5",
+    "depcheck": "^1.4.7",
     "eslint": "^8.46.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.10.0",
