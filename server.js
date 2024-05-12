@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 // app comes after dotenv config so that it has access to .env variables
 const app = require("./app");
 const PORT = process.env.PORT || 3000;
-const DB = process.env.DATABASE.replace(
+const DB = process.env.DATABASE_URL.replace(
   /<PASSWORD>/g,
   process.env.DATABASE_PASSWORD
 );
